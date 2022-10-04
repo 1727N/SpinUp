@@ -11,14 +11,14 @@
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
 // Controller1          controller                    
-// FrontLeftDrive       motor         11              
-// FrontRightDrive      motor         1               
-// BackLeftDrive        motor         19              
-// BackRightDrive       motor         9               
-// STrack               rotation      20              
-// Inertial6            inertial      5               
+// FL                   motor         11              
+// FR                   motor         1               
+// BL                   motor         19              
+// BR                   motor         9               
+// Inertial             inertial      5               
 // Left                 encoder       G, H            
 // Right                encoder       A, B            
+// Side                 encoder       E, F            
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -51,13 +51,13 @@ void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-  Inertial6.calibrate();
+  Inertial.calibrate();
 
-  while(Inertial6.isCalibrating()) {
+  while(Inertial.isCalibrating()) {
     task::sleep(100);
   }
 
-  Inertial6.setHeading(270, rotationUnits::deg);
+  Inertial.setHeading(270, rotationUnits::deg);
 
   std::cout << "IMU Calibrated" << std::endl << std::endl;
 
@@ -98,17 +98,17 @@ void autonomous(void) {
   // Insert autonomous user code here.
   // ..........................................................................
 
-  //reset rotation sensors
+  //reset sensors
   Left.resetRotation();
   Right.resetRotation();
-  STrack.resetPosition();
+  Side.resetRotation();
 
-  FrontLeftDrive.resetRotation();
-  FrontRightDrive.resetRotation();
-  BackLeftDrive.resetRotation();
-  BackRightDrive.resetRotation();
+  FL.resetRotation();
+  FR.resetRotation();
+  BL.resetRotation();
+  BR.resetRotation();
 
-  //start the odometry
+  //start odom
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
@@ -138,31 +138,31 @@ double intakekPDriver = 1.0;
 void usercontrol(void) {
   Left.resetRotation();
   Right.resetRotation();
-  STrack.resetPosition();
+  Side.resetRotation();
 
-  FrontLeftDrive.resetRotation();
-  FrontRightDrive.resetRotation();
-  BackLeftDrive.resetRotation();
-  BackRightDrive.resetRotation();
+  FL.resetRotation();
+  FR.resetRotation();
+  BL.resetRotation();
+  BR.resetRotation();
 
   double driveAmt;
   double turnAmt;
   double strafeAmt;
 
-  FrontLeftDrive.setBrake(brakeType::brake);
-  FrontRightDrive.setBrake(brakeType::brake);
-  BackLeftDrive.setBrake(brakeType::brake);
-  BackRightDrive.setBrake(brakeType::brake);
+  FL.setBrake(brakeType::brake);
+  FR.setBrake(brakeType::brake);
+  BL.setBrake(brakeType::brake);
+  BR.setBrake(brakeType::brake);
 
-  Inertial6.calibrate();
+  Inertial.calibrate();
 
-  while(Inertial6.isCalibrating()) {
+  while(Inertial.isCalibrating()) {
     task::sleep(100);
   }
 
   std::cout << "IMU Calibrated" << std::endl << std::endl;
 
-  Inertial6.setHeading(270, rotationUnits::deg);
+  Inertial.setHeading(270, rotationUnits::deg);
   
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
@@ -177,16 +177,16 @@ void usercontrol(void) {
     turnAmt = 0.4 * exponentialDrive(Controller1.Axis1.value());
     strafeAmt = exponentialDrive(Controller1.Axis4.value());
 
-    FrontLeftDrive.spin(directionType::fwd, driveAmt + turnAmt + strafeAmt, velocityUnits::pct);
-    FrontRightDrive.spin(directionType::fwd, driveAmt - turnAmt - strafeAmt, velocityUnits::pct);
-    BackLeftDrive.spin(directionType::fwd, driveAmt + turnAmt - strafeAmt, velocityUnits::pct);
-    BackRightDrive.spin(directionType::fwd, driveAmt - turnAmt + strafeAmt, velocityUnits::pct);
+    FL.spin(directionType::fwd, driveAmt + turnAmt + strafeAmt, velocityUnits::pct);
+    FR.spin(directionType::fwd, driveAmt - turnAmt - strafeAmt, velocityUnits::pct);
+    BL.spin(directionType::fwd, driveAmt + turnAmt - strafeAmt, velocityUnits::pct);
+    BR.spin(directionType::fwd, driveAmt - turnAmt + strafeAmt, velocityUnits::pct);
 
     if(abs(Controller1.Axis3.value()) < 5 && abs(Controller1.Axis1.value()) < 5 && abs(Controller1.Axis4.value()) < 5) {
-      FrontLeftDrive.stop(brakeType::brake);
-      FrontRightDrive.stop(brakeType::brake);
-      BackLeftDrive.stop(brakeType::brake);
-      BackRightDrive.stop(brakeType::brake);
+      FL.stop(brakeType::brake);
+      FR.stop(brakeType::brake);
+      BL.stop(brakeType::brake);
+      BR.stop(brakeType::brake);
     }
 
     if (Controller1.ButtonX.PRESSED){
@@ -199,10 +199,10 @@ void usercontrol(void) {
   }
 
   /*
-  FrontLeftDrive.setBrake(brakeType::brake);
-  FrontRightDrive.setBrake(brakeType::brake);
-  BackLeftDrive.setBrake(brakeType::brake);
-  BackRightDrive.setBrake(brakeType::brake);
+  FL.setBrake(brakeType::brake);
+  FR.setBrake(brakeType::brake);
+  BL.setBrake(brakeType::brake);
+  BR.setBrake(brakeType::brake);
 
   while (1) {
     float maxSpeed = 100;
@@ -212,10 +212,10 @@ void usercontrol(void) {
     float leftNewPct = leftPct * leftPct *leftPct*100;
     float rightNewPct = rightPct *rightPct *rightPct*100;
 
-    FrontRightDrive.spin(fwd, rightNewPct, pct);
-    BackRightDrive.spin(fwd, rightNewPct, pct);
-    FrontLeftDrive.spin(fwd, leftNewPct, pct);
-    BackLeftDrive.spin(fwd, leftNewPct, pct);
+    FR.spin(fwd, rightNewPct, pct);
+    BR.spin(fwd, rightNewPct, pct);
+    FL.spin(fwd, leftNewPct, pct);
+    BL.spin(fwd, leftNewPct, pct);
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.

@@ -56,24 +56,24 @@ int drawField () {
 
   //Goals
 
-    // Top Left
-    drawGoal(x + goalSize, y + goalSize);
-    //Top Mid
-    drawGoal(x + 120, y + goalSize);
-    //Top Right
-    drawGoal(x + 240 - goalSize, y + goalSize);
-    //Mid Left
-    drawGoal(x + goalSize, y + 120);
-    //Mid Mid
-    drawGoal(x + 120, y + 120);
-    //Mid Right
-    drawGoal(x + 240 - goalSize, y + 120);
-    //Bottom Left
-    drawGoal(x + goalSize, y + 240 - goalSize);
-    //Bottom Mid
-    drawGoal(x + 120, y + 240 - goalSize);
-    //Bottom Right
-    drawGoal(x + 240 - goalSize, y + 240 - goalSize);
+    // // Top Left
+    // drawGoal(x + goalSize, y + goalSize);
+    // //Top Mid
+    // drawGoal(x + 120, y + goalSize);
+    // //Top Right
+    // drawGoal(x + 240 - goalSize, y + goalSize);
+    // //Mid Left
+    // drawGoal(x + goalSize, y + 120);
+    // //Mid Mid
+    // drawGoal(x + 120, y + 120);
+    // //Mid Right
+    // drawGoal(x + 240 - goalSize, y + 120);
+    // //Bottom Left
+    // drawGoal(x + goalSize, y + 240 - goalSize);
+    // //Bottom Mid
+    // drawGoal(x + 120, y + 240 - goalSize);
+    // //Bottom Right
+    // drawGoal(x + 240 - goalSize, y + 240 - goalSize);
 
     //Calculate offsets for box around robot
     lineOffset1 = sqrt(2) * robotSize * cos(currentAbsoluteOrientation + M_PI_4);
@@ -84,12 +84,13 @@ int drawField () {
 
 
     //Draw the Robot
-    Brain.Screen.setPenColor(green);
+    Brain.Screen.setPenColor(blue);
     Brain.Screen.setPenWidth(5);
     Brain.Screen.drawLine(robotX + lineOffset1, 240 + robotY - lineOffset2, robotX + lineOffset2, 240 + robotY + lineOffset1);
     Brain.Screen.drawLine(robotX + lineOffset2, 240 + robotY + lineOffset1, robotX - lineOffset1, 240 + robotY + lineOffset2);
     Brain.Screen.drawLine(robotX - lineOffset1, 240 + robotY + lineOffset2, robotX - lineOffset2, 240 + robotY - lineOffset1);
     Brain.Screen.drawLine(robotX - lineOffset2, 240 + robotY - lineOffset1, robotX + lineOffset1, 240 + robotY - lineOffset2);
+    Brain.Screen.setPenColor(black);
 
     //calculate where to place forward line
     headingX = 10 * cos(currentAbsoluteOrientation);
@@ -98,19 +99,19 @@ int drawField () {
     //Draw Heading Line
     Brain.Screen.drawLine(robotX, 240 + robotY, robotX + headingX, 240 + robotY - headingY);
 
-    //Brain.Screen.setCursor(3, 7);
-    //Brain.Screen.print(yPosGlobal);
+    // Brain.Screen.setCursor(3, 7);
+    // Brain.Screen.print(yPosGlobal);
     //Uncomment To Animate the Robot
-    //robotX += 1;
-    //currentAbsoluteOrientation += 0.1;
+    // robotX += 1;
+    // currentAbsoluteOrientation += 0.1;
 
-    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.setCursor(2, 30);
     Brain.Screen.print("Orientation: %f", currentAbsoluteOrientation * 180 / M_PI);
 
-    Brain.Screen.setCursor(4, 1);
+    Brain.Screen.setCursor(4, 30);
     Brain.Screen.print("X: %f", xPosGlobal);
 
-    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.setCursor(6, 30);
     Brain.Screen.print("Y: %f", yPosGlobal);
 
     task::sleep(20);

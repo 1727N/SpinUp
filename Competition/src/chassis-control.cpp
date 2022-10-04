@@ -1,12 +1,12 @@
 #include "chassis-control.h"
 #include <iostream>
 
-//target coords to drive to
+//target coords
 double xTargetLocation = xPosGlobal;
 double yTargetLocation = yPosGlobal;
 double targetFacingAngle = 0;
 
-//distances between robot's current position and the target position
+//distances
 double xDistToTarget = 0;
 double yDistToTarget = 0;
 
@@ -120,7 +120,7 @@ void drivePID() {
   //Error is equal to the total distance away from the target (uses distance formula with current position and target location)
   driveError = sqrt(pow((xPosGlobal - xTargetLocation), 2) + pow((yPosGlobal - yTargetLocation), 2));
   
-  //only use integral if close enough to target
+  //use integral if close enough to target
   if(fabs(driveError) < driveIntegralBound) {
     driveIntegral += driveError;
   }
@@ -175,7 +175,7 @@ void turnPID() {
     turnError = (turnError/fabs(turnError)) * -1 * fabs(2 * M_PI - turnError);
   }
 
-  //only use integral if close enough to target
+  //use integral if close enough to target
   if(fabs(turnError) < turnIntegralBound) {
     turnIntegral += turnError;
   }
@@ -221,15 +221,12 @@ double BackRightPower = 0;
 
 /* CHASSIS CONTROL TASK */
 int chassisControl() {
-  //loop to constantly execute chassis commands
   while(1) {
     
     if(runChassisControl) {
-      //Distances to target on each axis
       xDistToTarget = xTargetLocation - xPosGlobal;
       yDistToTarget = yTargetLocation - yPosGlobal;
 
-      //Angle of hypotenuse
       hypotenuseAngle = atan2(yDistToTarget, xDistToTarget);
 
       if(hypotenuseAngle < 0) {
@@ -253,16 +250,16 @@ int chassisControl() {
       drivePID();
       turnPID();
 
-      //set power for each motor
+      //set power
       FrontLeftPower = (turnPowerPID + (drivePowerFLBR * drivePowerPID)) * maxAllowedSpeed;
       FrontRightPower = ((drivePowerFRBL * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
       BackLeftPower = ((drivePowerFRBL * drivePowerPID) + turnPowerPID) * maxAllowedSpeed;
       BackRightPower = ((drivePowerFLBR * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
       
-      FrontLeftDrive.spin(directionType::fwd, FrontLeftPower, voltageUnits::volt);
-      FrontRightDrive.spin(directionType::fwd, FrontRightPower, voltageUnits::volt);
-      BackLeftDrive.spin(directionType::fwd, BackLeftPower, voltageUnits::volt);
-      BackRightDrive.spin(directionType::fwd, BackRightPower, voltageUnits::volt);
+      FL.spin(directionType::fwd, FrontLeftPower, voltageUnits::volt);
+      FR.spin(directionType::fwd, FrontRightPower, voltageUnits::volt);
+      BL.spin(directionType::fwd, BackLeftPower, voltageUnits::volt);
+      BR.spin(directionType::fwd, BackRightPower, voltageUnits::volt);
       
 
    
