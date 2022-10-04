@@ -1,0 +1,266 @@
+bool runTheIntakes = false;
+bool runTheBottomRoller = false;
+bool runTheTopRoller = false;
+
+bool ratchetIsOpen = false;
+
+bool ratchetCloseAutomatically = true;
+
+/*When to stop running the intakes
+  0 - When I tell it to stop
+  1 - When ball reaches bottom sensor
+  2 - When ball reaches top sensor
+  3 - When balls in both sensors
+*/
+int intakeStopCondition = 0;
+
+double intakeSpeed = 1.0;
+double bottomRollerSpeed = 1.0;
+double topRollerSpeed = 1.0;
+
+int totalTimeSpent = 0;
+
+int maxAllowedTime = 0;
+
+double leftIntakeError = 0;
+double rightIntakeError = 0;
+
+double intakekP = 0.7;
+
+//task to control the intakes and indexers during auton
+int intakeControl() {
+  while(1) {
+    
+    if(ratchetIsOpen) {
+      leftIntakeError = -45 - LeftIntake.position(rotationUnits::deg);
+      rightIntakeError = -45 - RightIntake.position(rotationUnits::deg);
+
+      LeftIntake.spin(directionType::fwd, leftIntakeError * intakekP, voltageUnits::volt);
+      RightIntake.spin(directionType::fwd, rightIntakeError * intakekP, voltageUnits::volt);
+
+      // if(RangeFinderA.distance(distanceUnits::in) > 1 && RangeFinderA.distance(distanceUnits::in) < 11 && ratchetCloseAutomatically) {
+      //   ratchetIsOpen = false;
+      // }
+    }
+
+    else {
+
+      if(runTheIntakes) {
+        LeftIntake.spin(directionType::fwd, intakeSpeed * 100, velocityUnits::pct);
+        RightIntake.spin(directionType::fwd, intakeSpeed * 100, velocityUnits::pct);
+      }
+      else {
+        LeftIntake.stop(brakeType::brake);
+        RightIntake.stop(brakeType::brake);
+      }
+
+      //condition for reaching first checkpoint
+      if(intakeStopCondition == 1 && RangeFinderC.distance(distanceUnits::in) < 4 && RangeFinderC.distance(distanceUnits::in) > 0.01) {
+        runTheIntakes = false;
+        runTheBottomRoller = false;
+        
+      }
+      else if(intakeStopCondition == 2 && RangeFinderE.distance(distanceUnits::in) < 6 && RangeFinderE.distance(distanceUnits::in) > 0.01) {
+        runTheIntakes = false;
+        runTheBottomRoller = false;
+        runTheTopRoller = false;
+      }
+      else if(intakeStopCondition == 3 && RangeFinderC.distance(distanceUnits::in) < 6 && RangeFinderC.distance(distanceUnits::in) > 0.01 && RangeFinderE.distance(distanceUnits::in) < 3 && RangeFinderE.distance(distanceUnits::in) > 0.01) {
+        runTheIntakes = false;
+        runTheBottomRoller = false;
+        runTheTopRoller = false;
+      }
+
+
+      //timeout (only for when there is a stop condition)
+      if(totalTimeSpent > maxAllowedTime && intakeStopCondition != 0) {
+        runTheIntakes = false;
+        runTheBottomRoller = false;
+      }
+
+      totalTimeSpent += 10;
+
+    }
+
+    if(runTheBottomRoller) {
+      BottomRoller.spin(directionType::fwd, bottomRollerSpeed * 100, velocityUnits::pct);
+    }
+    else {
+      BottomRoller.stop(brakeType::brake);
+    }
+
+    if(runTheTopRoller) {
+      TopRoller.spin(directionType::fwd, topRollerSpeed * 100, velocityUnits::pct);
+    }
+    else {
+      TopRoller.stop(brakeType::brake);
+    }
+
+
+    task::sleep(10);
+  }
+  return 1;
+}
+
+void runIntakes (double speed, int stopCondition = 0, int timeOutTime = 1000) {
+  totalTimeSpent = 0;
+  maxAllowedTime = timeOutTime;
+  runTheIntakes = true;
+  runTheBottomRoller = true;
+  intakeSpeed = speed;
+  bottomRollerSpeed = speed;
+  intakeStopCondition = stopCondition;
+}
+
+void runJustIntakes(double speed, int stopCondition = 0, int timeOutTime = 1000) {
+  totalTimeSpent = 0;
+  maxAllowedTime = timeOutTime;
+  runTheIntakes = true;
+  intakeSpeed = speed;
+  intakeStopCondition = stopCondition;
+}
+
+void runBottomRoller(double speed) {
+  runTheBottomRoller = true;
+
+  bottomRollerSpeed = speed;
+}
+
+void runTopRoller(double speed) {
+  runTheTopRoller = true;
+  topRollerSpeed = speed;
+}
+
+void runAllIntakes(double speed, int stopCondition = 0, int timeOutTime = 1000) {
+  totalTimeSpent = 0;
+  runTheIntakes = true;
+  runTheBottomRoller = true;
+  if(stopCondition != 1) {
+    runTheTopRoller = true;
+    topRollerSpeed = speed;
+  }
+  
+  intakeSpeed = speed;
+  bottomRollerSpeed = speed;
+  
+  intakeStopCondition = stopCondition;
+  maxAllowedTime = timeOutTime;
+
+}
+void stopIntakes() {
+  runTheIntakes = false;
+  runTheBottomRoller = false;
+}
+
+void stopBottomRoller() {
+  runTheBottomRoller = false;
+}
+
+void stopTopRoller() {
+  runTheTopRoller = false;
+}
+
+void stopAllIntakes() {
+  runTheIntakes = false;
+  runTheBottomRoller = false;
+  runTheTopRoller = false;
+}
+
+
+void scoreBall() {
+  topRollerSpeed = 1.0;
+  bottomRollerSpeed = 1.0;
+  runTheBottomRoller = true;
+  runTheTopRoller = true;
+
+  wait(400, timeUnits::msec);
+  runTheTopRoller = false;
+  runTheBottomRoller = false;
+}
+
+void openRatchets(bool autoClose = true) {
+  ratchetIsOpen = true;
+
+  ratchetCloseAutomatically = autoClose;
+
+  LeftIntake.resetPosition();
+  RightIntake.resetPosition();
+  
+}
+
+void closeRatchets() {
+  ratchetIsOpen = false;
+}
+
+bool areIntakesOpenInDriver = false;
+
+void openRatchetsInDriver() {
+  LeftIntake.resetPosition();
+  RightIntake.resetPosition();
+}
+
+task intakeTask(intakeControl);
+
+void usercontrol(){
+/* INTAKES AND BOTTOM INDEXER */
+    
+    //L1 runs the intakes and bottom indexer inward
+    if(Controller1.ButtonL1.pressing()) {
+      areIntakesOpenInDriver = false;
+      LeftIntake.spin(directionType::fwd, 100, velocityUnits::pct);
+      RightIntake.spin(directionType::fwd, 100, velocityUnits::pct);
+      BottomRoller.spin(directionType::fwd, 100, velocityUnits::pct);
+    }
+    //L2 runs the intakes and bottom indexer out
+    else if(Controller1.ButtonL2.pressing()) {
+      areIntakesOpenInDriver = false;
+      LeftIntake.spin(directionType::rev, 100, velocityUnits::pct);
+      RightIntake.spin(directionType::rev, 100, velocityUnits::pct);
+
+      //Only run the bottom indeder out if we're not running the top indexer up
+      if(!Controller1.ButtonR1.pressing()) {
+        BottomRoller.spin(directionType::rev, 100, velocityUnits::pct);
+      }
+      
+    }
+    //open the ratchets is A is pressed and no other intake commands are happening
+    else if(Controller1.ButtonA.pressing() && areIntakesOpenInDriver == false) {
+      areIntakesOpenInDriver = true;
+
+    }
+    //Else, stop the intakes and bottom indexer
+    else {
+      LeftIntake.stop(brakeType::brake);
+      RightIntake.stop(brakeType::brake);
+      //Stop the bottom roller, unless we're scoring balls
+      if(!Controller1.ButtonR1.pressing()) {
+        BottomRoller.stop(brakeType::brake);
+      } 
+    }
+
+    /* TOP INDEXER */
+
+    //R1 runs top & bottom indexers upwards
+    if(Controller1.ButtonR1.pressing()) {
+      TopRoller.spin(directionType::fwd, 100, velocityUnits::pct);
+      BottomRoller.spin(directionType::fwd, 100, velocityUnits::pct);
+    }
+    //R2 runs the top indexer downwards
+    else if(Controller1.ButtonR2.pressing()) {
+      TopRoller.spin(directionType::rev, 100, velocityUnits::pct);
+    }
+    //Else, stop the top indexer
+    else {
+      TopRoller.stop(brakeType::brake);
+    }
+
+
+    //ratchet control
+    if(areIntakesOpenInDriver == true) {
+      leftError = -45 - LeftIntake.position(rotationUnits::deg);
+      rightError = -45 - RightIntake.position(rotationUnits::deg);
+
+      LeftIntake.spin(directionType::fwd, leftError * intakekPDriver, voltageUnits::volt);
+      RightIntake.spin(directionType::fwd, rightError * intakekPDriver, voltageUnits::volt);
+    }
+}
