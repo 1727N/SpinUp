@@ -3,7 +3,7 @@
 
 //CONSTANTS / Hard-Coded Values
 //Radius of tracking wheels in inches
-double WHEEL_RADIUS = 1.379; //was 1.379 //1.43
+double WHEEL_RADIUS = 2.75; //was 1.379 //1.43
 
 //Starting angle (relative to field) (RADIANS)
 double THETA_START = M_PI_2;
@@ -15,9 +15,9 @@ double X_START = 71.5; //19.1
 double Y_START = 71.5; //8.5
 
 //Distances of tracking wheels from tracking center (INCHES)
-double LTrackRadius = 6.5; //was 6.87
-double RTrackRadius = 6.5; //6.8335
-double STrackRadius = 5.85;
+double LTrackRadius = 4.5; //was 6.87
+double RTrackRadius = 4.5; //6.8335
+double STrackRadius = 3.75;
 
 //Calculated Values (every loop)
 //Angles (DEGREES)
@@ -72,7 +72,7 @@ int positionTracking() {
   std::cout << "heading: " << currentAbsoluteOrientation << std::endl << std::endl;
 
   while(1) {
-    LPos = Left.position(rotationUnits::deg);
+    LPos = -Left.position(rotationUnits::deg);
     RPos = -Right.position(rotationUnits::deg);
     SPos = Side.position(rotationUnits::deg);
 

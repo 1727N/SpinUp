@@ -15,7 +15,7 @@
 // FR                   motor         1               
 // BL                   motor         19              
 // BR                   motor         9               
-// Inertial             inertial      5               
+// Inertial             inertial      17              
 // Left                 encoder       G, H            
 // Right                encoder       A, B            
 // Side                 encoder       E, F            
@@ -170,8 +170,8 @@ void usercontrol(void) {
 
   while (1) {
     /* DRIVE */
-    //Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
-    //Brain.Screen.printAt( 10, 200, "Right %6.1f", Right.position(deg));
+    Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
+    Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
 
     driveAmt = 0.4 * exponentialDrive(Controller1.Axis3.value());
     turnAmt = 0.4 * exponentialDrive(Controller1.Axis1.value());
