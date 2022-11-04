@@ -3,7 +3,7 @@
 
 //CONSTANTS / Hard-Coded Values
 //Radius of tracking wheels in inches
-double WHEEL_RADIUS = 2.75; //was 1.379 //1.43
+double WHEEL_RADIUS = 2.75;
 
 //Starting angle (relative to field) (RADIANS)
 double THETA_START = M_PI_2;

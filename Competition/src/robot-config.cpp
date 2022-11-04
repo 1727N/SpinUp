@@ -17,6 +17,12 @@ inertial Inertial = inertial(PORT17);
 encoder Left = encoder(Brain.ThreeWirePort.G);
 encoder Right = encoder(Brain.ThreeWirePort.A);
 encoder Side = encoder(Brain.ThreeWirePort.E);
+motor FlyFront = motor(PORT5, ratio6_1, true);
+motor FlyBack = motor(PORT6, ratio6_1, false);
+/*vex-vision-config:begin*/
+vision Vision = vision (PORT3, 50);
+/*vex-vision-config:end*/
+motor Intake = motor(PORT12, ratio18_1, false);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

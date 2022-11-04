@@ -19,11 +19,14 @@
 // Left                 encoder       G, H            
 // Right                encoder       A, B            
 // Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         12              
 // ---- END VEXCODE CONFIGURED DEVICES ----
-
-#include "vex.h"
 #include "chassis-control.h"
 #include "draw-field.h"
+#include "flywheel.h"
 #include <iostream>
 
 using namespace vex;
@@ -37,6 +40,7 @@ task odometryTask;
 task drawFieldTask;
 task chassisControlTask;
 task intakeTask;
+task flywheelTask;
 /*---------------------------------------------------------------------------*/
 /*                          Pre-Autonomous Functions                         */
 /*                                                                           */
@@ -112,6 +116,7 @@ void autonomous(void) {
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
+  task flywheelControlTask(FwControlTask);
 
   wait(1500, msec);
 
@@ -129,6 +134,28 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 double exponentialDrive(double controllerValue) {
   return pow(controllerValue, 3) / pow(100, 2);
+}
+
+bool intakeTrue = false;
+const int intakePct = 100;
+
+void intakeControl(){
+  if (Controller1.ButtonR1.pressing()){
+   intakeTrue = true;
+  }
+  else if (Controller1.ButtonR2.pressing()){
+   intakeTrue = false;
+   Intake.stop();
+  }
+  if (intakeTrue){
+   Intake.spin(fwd, intakePct, pct);
+  }
+  else if(Controller1.ButtonY.pressing()) {
+    Intake.spin(reverse, 100, pct);
+  }
+  else {
+    Intake.setStopping(coast);
+  }
 }
 
 double leftError = 0;
@@ -167,20 +194,32 @@ void usercontrol(void) {
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
+  task flywheelControlTask(FwControlTask);
+
+  FlyFront.setBrake(coast);
 
   while (1) {
     /* DRIVE */
-    Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
-    Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
+    // Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
+    // Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
 
-    driveAmt = 0.4 * exponentialDrive(Controller1.Axis3.value());
-    turnAmt = 0.4 * exponentialDrive(Controller1.Axis1.value());
+    driveAmt = exponentialDrive(Controller1.Axis3.value());
+    turnAmt = exponentialDrive(Controller1.Axis1.value());
     strafeAmt = exponentialDrive(Controller1.Axis4.value());
 
     FL.spin(directionType::fwd, driveAmt + turnAmt + strafeAmt, velocityUnits::pct);
     FR.spin(directionType::fwd, driveAmt - turnAmt - strafeAmt, velocityUnits::pct);
     BL.spin(directionType::fwd, driveAmt + turnAmt - strafeAmt, velocityUnits::pct);
     BR.spin(directionType::fwd, driveAmt - turnAmt + strafeAmt, velocityUnits::pct);
+
+    intakeControl();
+
+    if (Controller1.ButtonL1.PRESSED){
+      FwVelocitySet( 144, 0.55 );
+    }
+    if (Controller1.ButtonL2.PRESSED){
+      FwVelocitySet( 0, 0 );
+    }
 
     if(abs(Controller1.Axis3.value()) < 5 && abs(Controller1.Axis1.value()) < 5 && abs(Controller1.Axis4.value()) < 5) {
       FL.stop(brakeType::brake);
