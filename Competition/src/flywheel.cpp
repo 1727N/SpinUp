@@ -1,10 +1,10 @@
 #include "flywheel.h"
 
 // Update inteval (in mS) for the flywheel control loop
-#define FW_LOOP_SPEED           25
+#define FW_LOOP_SPEED           20
 
 // Maximum power we want to send to the flywheel motors
-#define FW_MAX_POWER            127
+#define FW_MAX_POWER            100
 
 // encoder counts per revolution depending on motor
 #define MOTOR_TPR_TURBO         261.333

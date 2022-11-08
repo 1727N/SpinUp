@@ -1,23 +1,27 @@
 #include "odometry.h"
 #include <iostream>
 
+#define rollerStart 0
+#define nonRollerStart M_PI_2
+#define AWPStart 0
+
 //CONSTANTS / Hard-Coded Values
 //Radius of tracking wheels in inches
 double WHEEL_RADIUS = 2.75;
 
 //Starting angle (relative to field) (RADIANS)
-double THETA_START = M_PI_2;
+double THETA_START = nonRollerStart;
 
 //The starting x and y coordinates of the bot (INCHES)
   //These distances are relative to some point (0,0) on the field
   //Relative to: BOTTOM LEFT CORNER
-double X_START = 71.5; //19.1
-double Y_START = 71.5; //8.5
+double X_START = 70;
+double Y_START = 70;
 
 //Distances of tracking wheels from tracking center (INCHES)
-double LTrackRadius = 4.5; //was 6.87
-double RTrackRadius = 4.5; //6.8335
-double STrackRadius = 3.75;
+double LTrackRadius = 4.625;
+double RTrackRadius = 4.5; 
+double STrackRadius = 2.125;
 
 //Calculated Values (every loop)
 //Angles (DEGREES)
@@ -73,7 +77,7 @@ int positionTracking() {
 
   while(1) {
     LPos = -Left.position(rotationUnits::deg);
-    RPos = -Right.position(rotationUnits::deg);
+    //RPos = -Right.position(rotationUnits::deg);
     SPos = Side.position(rotationUnits::deg);
 
     //Calculate distance traveled by tracking each wheel (INCHES)
@@ -112,7 +116,7 @@ int positionTracking() {
       //Calculate the changes in the X and Y values (INCHES)
       //Distance = 2 * Radius * sin(deltaTheta / 2)
       deltaXLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistS / deltaTheta) + STrackRadius);
-      deltaYLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistR / deltaTheta) - RTrackRadius);
+      deltaYLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistL / deltaTheta) - LTrackRadius);
     }
 
     //The average angle of the robot during its arc (RADIANS)
@@ -138,7 +142,7 @@ int positionTracking() {
     if (Controller1.ButtonB.PRESSED){
       std::cout << "x: " << xPosGlobal << std::endl;
       std::cout << "y: " << yPosGlobal << std::endl;
-      std::cout << "heading: " << currentAbsoluteOrientation << std::endl << std::endl;
+      std::cout << "heading: " << Inertial.heading() << std::endl << std::endl;
     }
 
     // Brain.Screen.setCursor(4,8);
@@ -152,8 +156,7 @@ int positionTracking() {
 
 
     //loop every 20 milliseconds
-    task::sleep(10);
-
+    task::sleep(20);
   }
   return 1;
 }

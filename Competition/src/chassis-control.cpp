@@ -22,33 +22,61 @@ double drivePowerFRBL = 0;
 
 bool runChassisControl = false;
 
+bool onlyTurn = false;
+bool directDriveOn;
+
 int timeOutValue = 2500;
 
 double maxAllowedSpeed = 1.0;
+
+#define toRadians M_PI/180;
 
 //Sets the target position and indicates a specific target heading
 void driveTo(double xTarget, double yTarget, double targetAngle, double timeOutLength = 2500, double maxSpeed = 1.0) {
   xTargetLocation = xTarget;
   yTargetLocation = yTarget;
-  targetFacingAngle = targetAngle;
+  targetFacingAngle = targetAngle * toRadians;
+
   runChassisControl = true;
+  onlyTurn = false;
+  directDriveOn = false;
+
   timeOutValue = timeOutLength;
   Brain.resetTimer();
   maxAllowedSpeed = maxSpeed;
 }
 
+double setPoint;
+double currentPoint;
+
+void directDrive(double xDist, double timeOutLength, double maxSpeed = 1.0){
+  Left.resetRotation();
+  setPoint = xDist;
+  targetFacingAngle = currentAbsoluteOrientation;
+  currentPoint = 0;
+
+  runChassisControl = true;
+  onlyTurn = false;
+  directDriveOn = true;
+
+  timeOutValue = timeOutLength;
+  Brain.resetTimer();
+  maxAllowedSpeed = maxSpeed;
+}
 
 // turns toward a specific heading
+
 void turnTo(double targetAngle, double timeOutLength = 2500) {
-  targetFacingAngle = targetAngle;
+  targetFacingAngle = targetAngle * toRadians;
 
   xTargetLocation = xPosGlobal;
   yTargetLocation = yPosGlobal;
 
   runChassisControl = true;
+  onlyTurn = true;
+  directDriveOn = false;
 
   timeOutValue = timeOutLength;
-
 
   Brain.resetTimer();
 }
@@ -63,6 +91,8 @@ void turnToPoint(double xCoordToFace, double yCoordToFace, double timeOutLength 
   yTargetLocation = yPosGlobal;
 
   runChassisControl = true;
+  onlyTurn = true;
+  directDriveOn = false;
 
   timeOutValue = timeOutLength;
 
@@ -77,20 +107,14 @@ void turnToPoint(double xCoordToFace, double yCoordToFace, double timeOutLength 
   result: Sets each value to a decimal from 0.0 to 1.0 representing 0% to 100% motor power
 */
 void setDrivePower(double theta) {
-  drivePowerFLBR = sin(theta + M_PI_4) / sin(M_PI_4);
-
-  //Limits the value to 1
-  if(fabs(drivePowerFLBR) > 1) {
-    drivePowerFLBR = fabs(drivePowerFLBR) / drivePowerFLBR;
+  if (onlyTurn){
+    drivePowerFLBR = 0;
+    drivePowerFRBL = 0;
   }
-
-  drivePowerFRBL = -sin(theta - M_PI_4) / sin(M_PI_4);
-
-  //Limits the value to 1
-  if(fabs(drivePowerFRBL) > 1) {
-    drivePowerFRBL = fabs(drivePowerFRBL) / drivePowerFRBL;
+  else {
+    drivePowerFLBR = 1;
+    drivePowerFRBL = 1;
   }
-
 }
 
 double driveError = 0;
@@ -103,22 +127,22 @@ double driveIntegralBound = 1.5;
 
 double driveDerivative = 0;
 
-double drivekP = 1.5;
-
-double drivekI = 0.02;
-double drivekD = 10.0;
-
-// double drivekP = 0.55;
-
-// double drivekI = 0.05;
-// double drivekD = 0.42;
+double drivekP = 10;
+double drivekI = 0;
+double drivekD = 0;
 
 double drivePowerPID = 0;
 
-void drivePID() {
+bool isPositive;
 
+void drivePID() {
   //Error is equal to the total distance away from the target (uses distance formula with current position and target location)
-  driveError = sqrt(pow((xPosGlobal - xTargetLocation), 2) + pow((yPosGlobal - yTargetLocation), 2));
+  if (!directDriveOn){
+    driveError = sqrt(pow((xPosGlobal - xTargetLocation), 2) + pow((yPosGlobal - yTargetLocation), 2));
+  }
+  else {
+    driveError = setPoint - currentPoint;
+  }
   
   //use integral if close enough to target
   if(fabs(driveError) < driveIntegralBound) {
@@ -140,14 +164,13 @@ void drivePID() {
   drivePowerPID = (driveError * drivekP + driveIntegral * drivekI + driveDerivative * drivekD);
 
   //Limit power output to 12V
-  if(drivePowerPID > 12) {
-    drivePowerPID = 12;
+  if(drivePowerPID > 10) {
+    drivePowerPID = 10;
   }
 
   if(fabs(driveError) < driveMaxError) {
     drivePowerPID = 0;
   }
-
 }
 
 double turnError = 0;
@@ -160,9 +183,13 @@ double turnIntegralBound = 0.09;
 
 double turnDerivative = 0;
 
-double turnkP = 13.00;
-double turnkI = 1.00;
-double turnkD = 10.00;
+// double turnkP = 26;
+// double turnkI = 0;
+// double turnkD = 0;
+
+double turnkP = 26;
+double turnkI = 5;
+double turnkD = 44;
 
 double turnPowerPID = 0;
 
@@ -195,9 +222,17 @@ void turnPID() {
   turnPowerPID = (turnError * turnkP + turnIntegral * turnkI + turnDerivative * turnkD);
 
   //Limit power output to 12V
-  if(turnPowerPID > 12) {
-    turnPowerPID = 12;
+  if (!onlyTurn){
+    if(turnPowerPID > 2) {
+      turnPowerPID = 2;
+    }
   }
+  else {
+    if(turnPowerPID > 12) {
+      turnPowerPID = 12;
+    }
+  }
+  
 
   if(fabs(turnError) < turnMaxError) {
     turnPowerPID = 0;
@@ -222,25 +257,29 @@ double BackRightPower = 0;
 /* CHASSIS CONTROL TASK */
 int chassisControl() {
   while(1) {
-    
     if(runChassisControl) {
-      xDistToTarget = xTargetLocation - xPosGlobal;
-      yDistToTarget = yTargetLocation - yPosGlobal;
-
-      hypotenuseAngle = atan2(yDistToTarget, xDistToTarget);
-
-      if(hypotenuseAngle < 0) {
-        hypotenuseAngle += 2 * M_PI;
+      if (directDriveOn){
+        currentPoint = -Left.rotation(rev) * 2.75;
       }
+      else {
+        xDistToTarget = xTargetLocation - xPosGlobal;
+        yDistToTarget = yTargetLocation - yPosGlobal;
 
-      //The angle the robot needs to travel relative to its forward direction in order to go toward the target
-      robotRelativeAngle = hypotenuseAngle - currentAbsoluteOrientation + M_PI_2;
+        hypotenuseAngle = atan2(yDistToTarget, xDistToTarget);
 
-      if(robotRelativeAngle > 2 * M_PI) {
-        robotRelativeAngle -= 2 * M_PI;
-      }
-      else if(robotRelativeAngle < 0) {
-        robotRelativeAngle += 2 * M_PI;
+        if(hypotenuseAngle < 0) {
+         hypotenuseAngle += 2 * M_PI;
+        }
+
+        //The angle the robot needs to travel relative to its forward direction in order to go toward the target
+        robotRelativeAngle = hypotenuseAngle - currentAbsoluteOrientation + M_PI_2;
+
+        if(robotRelativeAngle > 2 * M_PI) {
+          robotRelativeAngle -= 2 * M_PI;
+        }
+        else if(robotRelativeAngle < 0) {
+          robotRelativeAngle += 2 * M_PI;
+        }
       }
 
       //Get the power percentage values for each set of motors
@@ -251,6 +290,8 @@ int chassisControl() {
       turnPID();
 
       //set power
+
+      //TODO: CHANGE DRIVEPOWERFLBR, etc. TO 1 to test effects. May have to change moving to a point into a two step process.
       FrontLeftPower = (turnPowerPID + (drivePowerFLBR * drivePowerPID)) * maxAllowedSpeed;
       FrontRightPower = ((drivePowerFRBL * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
       BackLeftPower = ((drivePowerFRBL * drivePowerPID) + turnPowerPID) * maxAllowedSpeed;
@@ -261,14 +302,23 @@ int chassisControl() {
       BL.spin(directionType::fwd, BackLeftPower, voltageUnits::volt);
       BR.spin(directionType::fwd, BackRightPower, voltageUnits::volt);
       
+      if (onlyTurn){
+        if (fabs(turnError) < 0.003){
+          runChassisControl = false;
+          std::cout << "<------------------ REACHED SETPOINT" << std::endl << std::endl;
+        }
+      }
 
-   
-      if(fabs(driveError) < 0.1 && fabs(turnError) < 0.003) {
-        runChassisControl = false;
+      else {
+        if(fabs(driveError) < 0.1 && fabs(turnError) < 0.003) {
+          runChassisControl = false; 
+          std::cout << "<------------------ REACHED SETPOINT" << std::endl << std::endl;
+        }
       }
 
       if(Brain.timer(timeUnits::msec) > timeOutValue) {
         runChassisControl = false;
+        std::cout << "TIMED OUT ------------------>" << std::endl << std::endl;
       }
 
       std::cout << "Drive Error: " << driveError << std::endl;
@@ -318,7 +368,6 @@ int chassisControl() {
       // FrontRightDrive.stop(brakeType::coast);
       // BackLeftDrive.stop(brakeType::coast);
       // BackRightDrive.stop(brakeType::coast);
-      task::sleep(20);
     }
     
     task::sleep(20);

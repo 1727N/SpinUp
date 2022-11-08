@@ -1,6 +1,8 @@
 #include "draw-field.h"
 
-int goalSize = 10;
+#define scale 240/140
+
+double goalSize = 7.865 * scale;
 
 int robotSize = 15;
 
@@ -13,14 +15,23 @@ double headingY = 0;
 double robotX = 0;
 double robotY = 0;
 
-void drawGoal(int x, int y) {
-    Brain.Screen.setFillColor(black);
-    Brain.Screen.setPenColor(black);
-    Brain.Screen.drawCircle(x, y, goalSize);
+// FIELD IS 140 INCHES, WHILE FIELD DRAWING IS 240 UNITS
+
+void drawRedGoal(int x, int y) {
+    Brain.Screen.setFillColor(red);
+    Brain.Screen.setPenColor(red);
+    Brain.Screen.drawCircle(x - goalSize/2, y - goalSize, goalSize);
     Brain.Screen.setFillColor("#666666");
-    Brain.Screen.drawCircle(x, y, 6);
+    Brain.Screen.drawCircle(x - goalSize/2, y - goalSize, (double) 6.48 * scale);
 }
 
+void drawBlueGoal(int x, int y) {
+    Brain.Screen.setFillColor(blue);
+    Brain.Screen.setPenColor(blue);
+    Brain.Screen.drawCircle(x - goalSize, y - goalSize/2, goalSize);
+    Brain.Screen.setFillColor("#666666");
+    Brain.Screen.drawCircle(x - goalSize, y - goalSize/2, (double) 6.48 * scale);
+}
 
 int drawField () {
   int x = 0;
@@ -30,57 +41,36 @@ int drawField () {
     Brain.Screen.drawRectangle(x, y, 240, 240);
 
     Brain.Screen.setPenColor("#404040");
-    //horizontal lines
-    for(int i = y + 40; i < y + 240; i+=40) {
+
+    //Horizontal lines
+    for(int i = y + 40; i < y + 240; i += 40) {
       Brain.Screen.drawLine(x, i, x + 240, i);
     }
 
-    //vertical lines
-    for(int i = x + 40; i < x + 240; i+=40) {
+    //Vertical lines
+    for(int i = x + 40; i < x + 240; i += 40) {
       Brain.Screen.drawLine(i, y, i, y + 240);
     }
 
     //Field Lines
     Brain.Screen.setPenColor("#dbdbdb");
-    //Home Row Lines
-    Brain.Screen.drawLine(x + 40, y, x + 40, y + 240);
-    Brain.Screen.drawLine(x, y + 118, x + 40, y + 118);
-    Brain.Screen.drawLine(x, y + 122, x + 40, y + 122);
+    Brain.Screen.drawLine(x, y, x + 240, y + 240);
 
-    Brain.Screen.drawLine(x + 200, y, x + 200, y + 240);
-    Brain.Screen.drawLine(x + 200, y + 118, x + 240, y + 118);
-    Brain.Screen.drawLine(x + 200, y + 122, x + 240, y + 122);
-    //Auton line
-    Brain.Screen.drawLine(x + 118, y, x + 118, y + 240);
-    Brain.Screen.drawLine(x + 122, y, x + 122, y + 240);
-
+    //Alliance Lines
+    
+    
   //Goals
+    
+    drawBlueGoal(x + 27.73 * scale, y + 122.22 * scale);
 
-    // // Top Left
-    // drawGoal(x + goalSize, y + goalSize);
-    // //Top Mid
-    // drawGoal(x + 120, y + goalSize);
-    // //Top Right
-    // drawGoal(x + 240 - goalSize, y + goalSize);
-    // //Mid Left
-    // drawGoal(x + goalSize, y + 120);
-    // //Mid Mid
-    // drawGoal(x + 120, y + 120);
-    // //Mid Right
-    // drawGoal(x + 240 - goalSize, y + 120);
-    // //Bottom Left
-    // drawGoal(x + goalSize, y + 240 - goalSize);
-    // //Bottom Mid
-    // drawGoal(x + 120, y + 240 - goalSize);
-    // //Bottom Right
-    // drawGoal(x + 240 - goalSize, y + 240 - goalSize);
+    drawRedGoal(x + 122.22 * scale, y + 27.73 * scale);
 
     //Calculate offsets for box around robot
     lineOffset1 = sqrt(2) * robotSize * cos(currentAbsoluteOrientation + M_PI_4);
     lineOffset2 = sqrt(2) * robotSize * cos(currentAbsoluteOrientation - M_PI_4);
 
-    robotX = xPosGlobal * 1.67;
-    robotY = -yPosGlobal * 1.67;
+    robotX = xPosGlobal * scale;
+    robotY = -yPosGlobal * scale;
 
 
     //Draw the Robot
@@ -104,6 +94,7 @@ int drawField () {
     //Uncomment To Animate the Robot
     // robotX += 1;
     // currentAbsoluteOrientation += 0.1;
+    Brain.Screen.setFillColor(green);
 
     Brain.Screen.setCursor(2, 30);
     Brain.Screen.print("Orientation: %f", currentAbsoluteOrientation * 180 / M_PI);

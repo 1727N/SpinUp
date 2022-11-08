@@ -61,7 +61,8 @@ void pre_auton(void) {
     task::sleep(100);
   }
 
-  Inertial.setHeading(270, rotationUnits::deg);
+  //roller: 0, nonroller: 270, AWP = 0
+  Inertial.setHeading(270, degrees);
 
   std::cout << "IMU Calibrated" << std::endl << std::endl;
 
@@ -87,15 +88,120 @@ void pre_auton(void) {
 
 //SKILLS
 void autonSkills() {
-  // driveTo(56.5, 18.5, 90, 1500, 0.6);
-  // waitUntil(runChassisControl == false);
-  turnToPoint(0, 0, 3000, 0.8);
-  wait(3000, msec);
-  //waitUntil(runChassisControl == false);
+  
 }
 
+void rollerStart(){
+  THETA_START = 0;
+
+  Intake.spin(fwd);
+  wait(500, msec);
+  Intake.stop();
+
+  directDrive(-5, 2000, 1);
+  waitUntil(runChassisControl == false);
+
+  //SHOOT 3
+  //
+
+  turnTo(135, 2000);
+  waitUntil(runChassisControl == false);
+
+  Intake.spin(fwd);
+  directDrive(5, 2000, 1);
+  waitUntil(runChassisControl == false);
+  Intake.stop();
+
+  turnTo(45, 1500);
+
+  //SHOOT 3
+  //
+}
+
+void nonRollerStart(){
+  THETA_START = M_PI_2;
+
+  Intake.spin(fwd);
+  // go forward && intake 1
+  directDrive(5, 2000, 1);
+  waitUntil(runChassisControl == false);
+
+  FwVelocitySet( 100, 0.80 );
+  turnTo(225, 2000);
+  waitUntil(runChassisControl == false);
+
+  // shoot 3
+  wait(2, sec);
+  FwVelocitySet( 0, 0.00 );
+
+  turnTo(135, 2000);
+  waitUntil(runChassisControl == false);
+  
+  // go forward and intake 2
+  directDrive(5, 2000, 1);
+  waitUntil(runChassisControl == false);
+  FwVelocitySet( 100, 0.80 );
+  turnTo(225, 2000);
+  waitUntil(runChassisControl == false);
+  Intake.stop();
+  
+  //shoot 2
+  wait(2, sec);
+  FwVelocitySet( 0, 0.00 );
+
+  //go back
+  turnTo(315, 2000);
+  waitUntil(runChassisControl == false);
+  directDrive(10, 3000, 1);
+  waitUntil(runChassisControl == false);
+  turnTo(270, 1000);
+  waitUntil(runChassisControl == false);
+
+  Intake.spin(fwd);
+  wait(500, msec);
+  Intake.stop();
+}
+
+void soloAWP(){
+  THETA_START = 0;
+
+  THETA_START = 0;
+
+  Intake.spin(fwd);
+  wait(500, msec);
+  Intake.stop();
+
+  directDrive(-5, 2000, 1);
+  waitUntil(runChassisControl == false);
+
+  turnTo(135, 2000);
+  waitUntil(runChassisControl == false);
+
+  Intake.spin(fwd);
+  directDrive(5, 2000, 1);
+  waitUntil(runChassisControl == false);
+  Intake.stop();
+
+  turnTo(45, 1500);
+  waitUntil(runChassisControl == false);
+
+  //SHOOT 3
+  //
 
 
+  //turn and drive to other roller
+  turnTo(135, 1500);
+  waitUntil(runChassisControl == false);
+
+  Intake.spin(fwd);
+
+  directDrive(10, 5000, 1);
+  waitUntil(runChassisControl == false);
+  turnTo(270, 1000);
+  Intake.spin(fwd);
+  wait(500, msec);
+  Intake.stop();
+}
 
 void autonomous(void) {
   // ..........................................................................
@@ -120,7 +226,10 @@ void autonomous(void) {
 
   wait(1500, msec);
 
-  autonSkills();
+  //autonSkills();
+  //rollerStart();
+  nonRollerStart();
+  //soloAWP();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -180,16 +289,6 @@ void usercontrol(void) {
   FR.setBrake(brakeType::brake);
   BL.setBrake(brakeType::brake);
   BR.setBrake(brakeType::brake);
-
-  Inertial.calibrate();
-
-  while(Inertial.isCalibrating()) {
-    task::sleep(100);
-  }
-
-  std::cout << "IMU Calibrated" << std::endl << std::endl;
-
-  Inertial.setHeading(270, rotationUnits::deg);
   
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
@@ -215,7 +314,7 @@ void usercontrol(void) {
     intakeControl();
 
     if (Controller1.ButtonL1.PRESSED){
-      FwVelocitySet( 144, 0.55 );
+      FwVelocitySet( 100, 0.80 );
     }
     if (Controller1.ButtonL2.PRESSED){
       FwVelocitySet( 0, 0 );
@@ -228,10 +327,14 @@ void usercontrol(void) {
       BR.stop(brakeType::brake);
     }
 
-    if (Controller1.ButtonX.PRESSED){
-      turnToPoint(0, 0, 2000, 0.8);
-      waitUntil(runChassisControl == false);
-    }
+    // if (Controller1.ButtonX.PRESSED){
+    //   turnTo(currentAbsoluteOrientation + M_PI_2, 5000);
+    // }
+
+    // std::cout << Brain.Timer.value() << "," 
+    //     << FlyFront.velocity(rpm) << "," <<  FlyFront.torque(Nm) << "," 
+    //     << FlyFront.current() << "," << FlyFront.voltage(volt)
+    //     << std::endl; 
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
@@ -275,8 +378,20 @@ int main() {
 
   std::cout << "----------------------------------------------------------------------------------------------------------------" << std::endl << std::endl;
 
+  Inertial.calibrate();
+
+  while(Inertial.isCalibrating()) {
+    task::sleep(100);
+  }
+
+  std::cout << "IMU Calibrated" << std::endl << std::endl;
+  
   // Prevent main from exiting with an infinite loop.
   while (true) {
+    // Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
+    // Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
+
+    // Brain.Screen.printAt( 10, 75, "Angle %6.1f", Inertial.heading());
     wait(100, msec);
   }
 }
