@@ -17,12 +17,14 @@
 // BR                   motor         9               
 // Inertial             inertial      17              
 // Left                 encoder       G, H            
-// Right                encoder       A, B            
 // Side                 encoder       E, F            
 // FlyFront             motor         5               
 // FlyBack              motor         6               
 // Vision               vision        3               
 // Intake               motor         12              
+// Puncher              digital_out   A               
+// Catapult             digital_out   B               
+// Right                encoder       C, D            
 // ---- END VEXCODE CONFIGURED DEVICES ----
 #include "chassis-control.h"
 #include "draw-field.h"
@@ -259,7 +261,7 @@ void intakeControl(){
   if (intakeTrue){
    Intake.spin(fwd, intakePct, pct);
   }
-  else if(Controller1.ButtonY.pressing()) {
+  else if(Controller1.ButtonB.pressing()) {
     Intake.spin(reverse, 100, pct);
   }
   else {
@@ -267,9 +269,81 @@ void intakeControl(){
   }
 }
 
-double leftError = 0;
-double rightError = 0;
-double intakekPDriver = 1.0;
+void puncherControl(){
+  if (Controller1.ButtonL1.PRESSED){  
+    Puncher.set(true);
+    wait(700, msec);
+    Puncher.set(false);
+  }
+}
+
+void catapultControl(){
+  if (Controller1.ButtonY.PRESSED){  
+    Catapult.set(true);
+  }
+}
+
+bool flyWheelOn = false;
+
+void flywheelControl(int setVolt){
+  if (flyWheelOn){
+    FlyFront.spin(fwd, setVolt, volt);
+    FlyBack.spin(fwd, setVolt, volt);
+  }
+  else {
+    FlyFront.setStopping(coast);
+    FlyBack.setStopping(coast);
+    FlyFront.stop();
+    FlyBack.stop();
+  }
+}
+
+double flyError = 0;
+double flyPrevError = 0;
+double flyMaxError = 10;
+
+double flykP = 0.5;
+double flykI = 0;
+double flykD = 0;
+
+double flyPowerPID = 0;
+
+void flyPID(int targetRPM) {
+  //Error is equal to the difference between the current facing direction and the target direction
+  flyError = targetRPM - FlyFront.velocity(rpm);
+
+  //use integral if close enough to target
+  // if(fabs(flyError) < flyIntegralBound) {
+  //   flyIntegral += flyError;
+  // }
+  // else {
+  //   flyIntegral = 0;
+  // }
+
+  //reset integral if we pass the target
+  // if(flyError * flyPrevError < 0) {
+  //   turnIntegral = 0;
+  // } 
+
+  flyPrevError = flyError - flyPrevError;
+
+  flyPrevError = flyError;
+
+  flyPowerPID = flyPowerPID + (flyError * flykP  + flyPrevError * flykD);
+
+  //Limit power output to 12V
+    if(flyPowerPID > 12) {
+      flyPowerPID = 12;
+    }
+  
+
+  if(fabs(flyError) < flyMaxError) {
+    flyPowerPID = 0;
+  }
+
+  FlyFront.spin(fwd, flyPowerPID, volt);
+  FlyBack.spin(fwd, flyPowerPID, volt);
+}
 
 void usercontrol(void) {
   Left.resetRotation();
@@ -293,39 +367,63 @@ void usercontrol(void) {
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
-  task flywheelControlTask(FwControlTask);
+  //task flywheelControlTask(FwControlTask);
 
   FlyFront.setBrake(coast);
+  FlyBack.setBrake(coast);
 
   while (1) {
+    float maxSpeed = 100;
+    float leftPct = (Controller1.Axis3.position())/maxSpeed;
+    float rightPct = (Controller1.Axis2.position())/maxSpeed;
+
+    float leftNewPct = leftPct * leftPct * leftPct * 100;
+    float rightNewPct = rightPct * rightPct * rightPct * 100;
+
+    FL.spin(reverse, rightNewPct, pct);
+    BL.spin(reverse, rightNewPct, pct);
+    FR.spin(reverse, leftNewPct, pct);
+    BR.spin(reverse, leftNewPct, pct);
+
     /* DRIVE */
     // Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
     // Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
 
-    driveAmt = exponentialDrive(Controller1.Axis3.value());
-    turnAmt = exponentialDrive(Controller1.Axis1.value());
-    strafeAmt = exponentialDrive(Controller1.Axis4.value());
+    // driveAmt = exponentialDrive(Controller1.Axis3.value());
+    // turnAmt = exponentialDrive(Controller1.Axis1.value());
+    // strafeAmt = exponentialDrive(Controller1.Axis4.value());
 
-    FL.spin(directionType::fwd, driveAmt + turnAmt + strafeAmt, velocityUnits::pct);
-    FR.spin(directionType::fwd, driveAmt - turnAmt - strafeAmt, velocityUnits::pct);
-    BL.spin(directionType::fwd, driveAmt + turnAmt - strafeAmt, velocityUnits::pct);
-    BR.spin(directionType::fwd, driveAmt - turnAmt + strafeAmt, velocityUnits::pct);
+    // FL.spin(directionType::fwd, driveAmt + turnAmt + strafeAmt, velocityUnits::pct);
+    // FR.spin(directionType::fwd, driveAmt - turnAmt - strafeAmt, velocityUnits::pct);
+    // BL.spin(directionType::fwd, driveAmt + turnAmt - strafeAmt, velocityUnits::pct);
+    // BR.spin(directionType::fwd, driveAmt - turnAmt + strafeAmt, velocityUnits::pct);
 
     intakeControl();
+    puncherControl();
+    catapultControl();
+    //flyPID(400);
 
-    if (Controller1.ButtonL1.PRESSED){
-      FwVelocitySet( 100, 0.80 );
+
+    flywheelControl(10);
+
+    if (Controller1.ButtonUp.PRESSED){
+      flyWheelOn = true;
+      //FwVelocitySet( 100, 0.85 );
+      //FlyBack.spin(fwd);
     }
-    if (Controller1.ButtonL2.PRESSED){
-      FwVelocitySet( 0, 0 );
+    if (Controller1.ButtonDown.PRESSED){
+      flyWheelOn = false;
+      //FwVelocitySet( 0, 0 );      
     }
 
-    if(abs(Controller1.Axis3.value()) < 5 && abs(Controller1.Axis1.value()) < 5 && abs(Controller1.Axis4.value()) < 5) {
-      FL.stop(brakeType::brake);
-      FR.stop(brakeType::brake);
-      BL.stop(brakeType::brake);
-      BR.stop(brakeType::brake);
-    }
+    //std::cout << FlyFront.velocity(rpm) << std::endl << std::endl;
+
+    // if(abs(Controller1.Axis3.value()) < 5 && abs(Controller1.Axis1.value()) < 5 && abs(Controller1.Axis4.value()) < 5) {
+    //   FL.stop(brakeType::brake);
+    //   FR.stop(brakeType::brake);
+    //   BL.stop(brakeType::brake);
+    //   BR.stop(brakeType::brake);
+    // }
 
     // if (Controller1.ButtonX.PRESSED){
     //   turnTo(currentAbsoluteOrientation + M_PI_2, 5000);

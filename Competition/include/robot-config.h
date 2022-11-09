@@ -12,7 +12,6 @@ extern motor BL;
 extern motor BR;
 extern inertial Inertial;
 extern encoder Left;
-extern encoder Right;
 extern encoder Side;
 extern motor FlyFront;
 extern motor FlyBack;
@@ -25,6 +24,9 @@ extern signature Vision__SIG_6;
 extern signature Vision__SIG_7;
 extern vision Vision;
 extern motor Intake;
+extern digital_out Puncher;
+extern digital_out Catapult;
+extern encoder Right;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

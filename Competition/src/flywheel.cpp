@@ -4,7 +4,7 @@
 #define FW_LOOP_SPEED           20
 
 // Maximum power we want to send to the flywheel motors
-#define FW_MAX_POWER            100
+#define FW_MAX_POWER            75
 
 // encoder counts per revolution depending on motor
 #define MOTOR_TPR_TURBO         261.333
@@ -236,7 +236,7 @@ FwControlUpdateVelocityTbhL()
 int FwControlTask()
 {
 	// Set the gain
-	gain = 0.00025;
+	gain = 0.0002;
 
 	// Set the encoder ticks per revolution
 	ticks_per_rev = MOTOR_TPR_TURBO;

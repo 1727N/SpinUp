@@ -259,7 +259,7 @@ int chassisControl() {
   while(1) {
     if(runChassisControl) {
       if (directDriveOn){
-        currentPoint = -Left.rotation(rev) * 2.75;
+        currentPoint = -Left.rotation(rev) * 2.75 * M_PI;
       }
       else {
         xDistToTarget = xTargetLocation - xPosGlobal;
