@@ -127,9 +127,9 @@ double driveIntegralBound = 1.5;
 
 double driveDerivative = 0;
 
-double drivekP = 10;
+double drivekP = 5;
 double drivekI = 0;
-double drivekD = 0;
+double drivekD = 2;
 
 double drivePowerPID = 0;
 

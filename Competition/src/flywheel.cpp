@@ -4,7 +4,7 @@
 #define FW_LOOP_SPEED           20
 
 // Maximum power we want to send to the flywheel motors
-#define FW_MAX_POWER            75
+#define FW_MAX_POWER            100
 
 // encoder counts per revolution depending on motor
 #define MOTOR_TPR_TURBO         261.333
@@ -232,11 +232,29 @@ FwControlUpdateVelocityTbhL()
 	last_errorL = current_errorL;
 }
 
+bool flywheelSpin;
+int setVoltage = 10;
+
+int fwTask(){
+  while(1){
+    if (flywheelSpin){
+      FlyFront.spin(fwd, setVoltage, volt);
+      FlyBack.spin(fwd, setVoltage, volt);
+    }
+    else {
+    FlyFront.setStopping(coast);
+    FlyBack.setStopping(coast);
+    FlyFront.stop();
+    FlyBack.stop();
+    }
+  }
+}
+
 /*Task to control the velocity of the flywheel */
 int FwControlTask()
 {
 	// Set the gain
-	gain = 0.0002;
+	gain = 0.00025;
 
 	// Set the encoder ticks per revolution
 	ticks_per_rev = MOTOR_TPR_TURBO;

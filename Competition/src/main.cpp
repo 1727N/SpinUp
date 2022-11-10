@@ -64,7 +64,7 @@ void pre_auton(void) {
   }
 
   //roller: 0, nonroller: 270, AWP = 0
-  Inertial.setHeading(270, degrees);
+  Inertial.setHeading(0, degrees);
 
   std::cout << "IMU Calibrated" << std::endl << std::endl;
 
@@ -83,14 +83,45 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 
 
+bool flyWheelOn = false;
 
+void flywheelControl(int setVolt){
+  if (flyWheelOn){
+    FlyFront.spin(fwd, setVolt, volt);
+    FlyBack.spin(fwd, setVolt, volt);
+  }
+  else {
+    FlyFront.setStopping(coast);
+    FlyBack.setStopping(coast);
+    FlyFront.stop();
+    FlyBack.stop();
+  }
+}
 
+void shoot(){
+  Puncher.set(true);
+  wait(500, msec);
+  Puncher.set(false);
+  wait(500, msec);
+}
 
 /* AUTON PROGRAMS */
 
 //SKILLS
 void autonSkills() {
   
+}
+
+motor_group Flywheel{FlyFront, FlyBack};
+
+void flywheelAutonTest(){
+  //flywheelControl(10);
+  //flyWheelOn;
+
+  Flywheel.setVelocity(500, rpm);
+  Flywheel.spin(fwd);
+  FlyFront.spin(fwd);
+  FlyBack.spin(fwd);
 }
 
 void rollerStart(){
@@ -100,30 +131,43 @@ void rollerStart(){
   wait(500, msec);
   Intake.stop();
 
-  directDrive(-5, 2000, 1);
+  // setVoltage = 12;
+  // flywheelSpin = true;
+  FwVelocitySet( 100, 1 );
+
+  directDrive(-2, 2000, 0.6);
   waitUntil(runChassisControl == false);
-  
+
+  turnTo(8, 1000);
+  waitUntil(runChassisControl == false);
+
+  wait(300, msec);
+
   shoot();
   shoot();
-  shoot();
-  //SHOOT 3
+
+  //SHOOT 2
   //
+  FwVelocitySet( 0, 0.00 );
+  
 
   turnTo(135, 2000);
   waitUntil(runChassisControl == false);
 
   Intake.spin(fwd);
-  directDrive(5, 2000, 1);
+  directDrive(40, 5000, 1);
   waitUntil(runChassisControl == false);
   Intake.stop();
 
   turnTo(45, 1500);
-  
-  shoot();
-  shoot();
-  shoot();
+
   //SHOOT 3
   //
+  shoot();
+  shoot();
+  shoot();
+
+  
 }
 
 void nonRollerStart(){
@@ -172,40 +216,47 @@ void nonRollerStart(){
 
 void soloAWP(){
   THETA_START = 0;
-
-  THETA_START = 0;
+  directDrive(1, 500, 0.5);
+  waitUntil(runChassisControl == false);
 
   Intake.spin(fwd);
   wait(500, msec);
   Intake.stop();
 
-  directDrive(-5, 2000, 1);
+  // setVoltage = 12;
+  // flywheelSpin = true;
+  FwVelocitySet( 100, 0.93 );
+
+  directDrive(-2, 2000, 0.6);
   waitUntil(runChassisControl == false);
 
-  turnTo(135, 2000);
+  turnTo(8, 1000);
+  waitUntil(runChassisControl == false);
+
+  wait(500, msec);
+
+  shoot();
+  shoot();
+
+  //SHOOT 2
+  //
+  FwVelocitySet( 0, 0.00 );
+  
+
+  turnTo(130, 2000);
   waitUntil(runChassisControl == false);
 
   Intake.spin(fwd);
-  directDrive(5, 2000, 1);
+  directDrive(130, 8000, 1);
   waitUntil(runChassisControl == false);
   Intake.stop();
 
-  turnTo(45, 1500);
+  turnTo(90, 1000);
   waitUntil(runChassisControl == false);
 
-  //SHOOT 3
-  //
-
-
-  //turn and drive to other roller
-  turnTo(135, 1500);
+  directDrive(10, 1000, 0.5);
   waitUntil(runChassisControl == false);
 
-  Intake.spin(fwd);
-
-  directDrive(10, 5000, 1);
-  waitUntil(runChassisControl == false);
-  turnTo(270, 1000);
   Intake.spin(fwd);
   wait(500, msec);
   Intake.stop();
@@ -232,12 +283,14 @@ void autonomous(void) {
   task chassisControlTask(chassisControl);
   task flywheelControlTask(FwControlTask);
 
-  wait(1500, msec);
+  wait(800, msec);
+
+  //flywheelAutonTest();
 
   //autonSkills();
   //rollerStart();
-  nonRollerStart();
-  //soloAWP();
+  //nonRollerStart();
+  soloAWP();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -254,6 +307,7 @@ double exponentialDrive(double controllerValue) {
 }
 
 bool intakeTrue = false;
+bool outTakeTrue = false;
 const int intakePct = 100;
 
 void intakeControl(){
@@ -267,46 +321,32 @@ void intakeControl(){
   if (intakeTrue){
    Intake.spin(fwd, intakePct, pct);
   }
-  else if(Controller1.ButtonB.pressing()) {
-    Intake.spin(reverse, 100, pct);
+  if(Controller1.ButtonB.PRESSED) {
+    outTakeTrue = !outTakeTrue;
+    Intake.stop();
+  }
+  if (outTakeTrue){
+    Intake.spin(reverse, 60, pct);
   }
   else {
     Intake.setStopping(coast);
   }
+  if (Controller1.ButtonX.pressing()){
+    Intake.spin(reverse, 40, pct);
+  }
 }
 
 void puncherControl(){
-  if (Controller1.ButtonL1.PRESSED){  
+  if (Controller1.ButtonUp.PRESSED){  
     Puncher.set(true);
     wait(700, msec);
     Puncher.set(false);
   }
-}
-
-void shoot(){
-    Puncher.set(true);
-    wait(700, msec);
-    Puncher.set(false);
 }
 
 void catapultControl(){
   if (Controller1.ButtonY.PRESSED){  
     Catapult.set(true);
-  }
-}
-
-bool flyWheelOn = false;
-
-void flywheelControl(int setVolt){
-  if (flyWheelOn){
-    FlyFront.spin(fwd, setVolt, volt);
-    FlyBack.spin(fwd, setVolt, volt);
-  }
-  else {
-    FlyFront.setStopping(coast);
-    FlyBack.setStopping(coast);
-    FlyFront.stop();
-    FlyBack.stop();
   }
 }
 
@@ -413,17 +453,15 @@ void usercontrol(void) {
     intakeControl();
     puncherControl();
     catapultControl();
+    flywheelControl(10);
     //flyPID(400);
 
-
-    flywheelControl(10);
-
-    if (Controller1.ButtonUp.PRESSED){
+    if (Controller1.ButtonL1.PRESSED){
       flyWheelOn = true;
       //FwVelocitySet( 100, 0.85 );
       //FlyBack.spin(fwd);
     }
-    if (Controller1.ButtonDown.PRESSED){
+    if (Controller1.ButtonL2.PRESSED){
       flyWheelOn = false;
       //FwVelocitySet( 0, 0 );      
     }
@@ -498,6 +536,7 @@ int main() {
   
   // Prevent main from exiting with an infinite loop.
   while (true) {
+    //flywheelControl(10);
     // Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
     // Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
 
