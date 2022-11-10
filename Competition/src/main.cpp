@@ -102,7 +102,10 @@ void rollerStart(){
 
   directDrive(-5, 2000, 1);
   waitUntil(runChassisControl == false);
-
+  
+  shoot();
+  shoot();
+  shoot();
   //SHOOT 3
   //
 
@@ -115,7 +118,10 @@ void rollerStart(){
   Intake.stop();
 
   turnTo(45, 1500);
-
+  
+  shoot();
+  shoot();
+  shoot();
   //SHOOT 3
   //
 }
@@ -275,6 +281,12 @@ void puncherControl(){
     wait(700, msec);
     Puncher.set(false);
   }
+}
+
+void shoot(){
+    Puncher.set(true);
+    wait(700, msec);
+    Puncher.set(false);
 }
 
 void catapultControl(){
