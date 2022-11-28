@@ -38,23 +38,15 @@ competition Competition;
 
 // define your global instances of motors and other devices here
 
+motor_group Flywheel{FlyFront, FlyBack};
+
 task odometryTask;
 task drawFieldTask;
 task chassisControlTask;
 task intakeTask;
 task flywheelTask;
-/*---------------------------------------------------------------------------*/
-/*                          Pre-Autonomous Functions                         */
-/*                                                                           */
-/*  You may want to perform some actions before the competition starts.      */
-/*  Do them in the following function.  You must return from this function   */
-/*  or the autonomous and usercontrol tasks will not be started.  This       */
-/*  function is only called once after the V5 has been powered on and        */
-/*  not every time that the robot is disabled.                               */
-/*---------------------------------------------------------------------------*/
 
 void pre_auton(void) {
-  // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
   Inertial.calibrate();
@@ -67,52 +59,81 @@ void pre_auton(void) {
   Inertial.setHeading(0, degrees);
 
   std::cout << "IMU Calibrated" << std::endl << std::endl;
-
-  // All activities that occur before the competition starts
-  // Example: clearing encoders, setting servo positions, ...
 }
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              Autonomous Task                              */
-/*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
+// bool flyWheelOn = false;
 
-
-bool flyWheelOn = false;
-
-void flywheelControl(int setVolt){
-  if (flyWheelOn){
-    FlyFront.spin(fwd, setVolt, volt);
-    FlyBack.spin(fwd, setVolt, volt);
-  }
-  else {
-    FlyFront.setStopping(coast);
-    FlyBack.setStopping(coast);
-    FlyFront.stop();
-    FlyBack.stop();
-  }
-}
+// void flywheelControl(int setVolt){
+//   if (flyWheelOn){
+//     FlyFront.spin(fwd, setVolt, volt);
+//     FlyBack.spin(fwd, setVolt, volt);
+//   }
+//   else {
+//     FlyFront.setStopping(coast);
+//     FlyBack.setStopping(coast);
+//     FlyFront.stop();
+//     FlyBack.stop();
+//   }
+// }
 
 void shoot(){
   Puncher.set(true);
-  wait(500, msec);
+  wait(300, msec);
   Puncher.set(false);
-  wait(500, msec);
+  wait(800, msec);
 }
 
-/* AUTON PROGRAMS */
+/* -------------------------- AUTON PROGRAMS -------------------------- */
 
 //SKILLS
 void autonSkills() {
-  
-}
+  THETA_START = 0;
+  FW_MAX_POWER = 88;
+  FwVelocitySet( 93, 0.85 ); 
 
-motor_group Flywheel{FlyFront, FlyBack};
+  directDrive(1, 500, 0.5);
+  waitUntil(runChassisControl == false);
+
+  Intake.spin(reverse);
+  wait(700, msec);
+  Intake.stop();
+
+  directDrive(-2, 1000, 0.6);
+  waitUntil(runChassisControl == false);
+
+  turnTo(14, 1000);
+  waitUntil(runChassisControl == false);
+
+  shoot();
+  FW_MAX_POWER = 89;
+  shoot();
+
+  //SHOOT 2
+  
+  FwVelocitySet( 0, 0.00 );
+  
+  directDrive(-10, 2000, 0.6);
+  waitUntil(runChassisControl == false); 
+  
+  turnTo(270, 1000);
+  waitUntil(runChassisControl == false);
+
+  directDrive(10, 1000, 0.6);
+  waitUntil(runChassisControl == false);
+
+  Intake.spin(fwd);
+  wait(700, msec);
+  Intake.stop();
+
+  directDrive(-8, 1000, 0.6);
+  waitUntil(runChassisControl == false);
+
+  turnTo(180, 2000);
+  waitUntil(runChassisControl == false);
+
+  directDrive(5, 1500, 0.6);
+  //waitUntil(runChassisControl == false);
+}
 
 void flywheelAutonTest(){
   //flywheelControl(10);
@@ -216,50 +237,69 @@ void nonRollerStart(){
 
 void soloAWP(){
   THETA_START = 0;
-  directDrive(1, 500, 0.5);
+  FW_MAX_POWER = 89;
+  FwVelocitySet( 93, 0.85 ); 
+
+  directDrive(1, 1500, 0.5);
   waitUntil(runChassisControl == false);
 
-  Intake.spin(fwd);
+  Intake.spin(reverse);
   wait(500, msec);
   Intake.stop();
-
-  // setVoltage = 12;
-  // flywheelSpin = true;
-  FwVelocitySet( 100, 0.93 );
-
+  
   directDrive(-2, 2000, 0.6);
   waitUntil(runChassisControl == false);
 
-  turnTo(8, 1000);
+  turnTo(7, 1500);
   waitUntil(runChassisControl == false);
 
-  wait(500, msec);
+  wait(1000, msec);
 
   shoot();
+  FW_MAX_POWER = 89;
   shoot();
 
   //SHOOT 2
-  //
+  
   FwVelocitySet( 0, 0.00 );
   
 
   turnTo(130, 2000);
   waitUntil(runChassisControl == false);
 
-  Intake.spin(fwd);
-  directDrive(130, 8000, 1);
-  waitUntil(runChassisControl == false);
-  Intake.stop();
+  // Intake.spin(fwd);
+  // directDrive(66, 6000, 1);
+  // waitUntil(runChassisControl == false);
+  // Intake.stop();
 
-  turnTo(90, 1000);
-  waitUntil(runChassisControl == false);
+  // turnTo(90, 1000);
+  // waitUntil(runChassisControl == false);
 
-  directDrive(10, 1000, 0.5);
-  waitUntil(runChassisControl == false);
+  // directDrive(2, 1000, 1);
+  // waitUntil(runChassisControl == false);
 
-  Intake.spin(fwd);
-  wait(500, msec);
-  Intake.stop();
+  // Intake.spin(reverse);
+  // wait(500, msec);
+  // Intake.stop();
+
+  FW_MAX_POWER = 100;
+}
+
+void driveFor(int xDist, int timeOutLength, int maxSpeed){
+  directDrive(xDist, timeOutLength, maxSpeed);
+  waitUntil(runChassisControl == false);
+}
+
+void turnToAngle(int targetAngle, int timeOutLength){
+  turnTo(targetAngle, timeOutLength);
+  waitUntil(runChassisControl == false);
+}
+
+void test(){
+  FW_MAX_POWER = 89;
+  FwVelocitySet( 93, 0.85 ); 
+  //turnToAngle(10, 10000);
+  //driveFor(24, 10000, 1);
 }
 
 void autonomous(void) {
@@ -276,21 +316,22 @@ void autonomous(void) {
   FR.resetRotation();
   BL.resetRotation();
   BR.resetRotation();
+  DRIVER_CONTROL = false;
 
   //start odom
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
-  task flywheelControlTask(FwControlTask);
+  task flywheelTask(FwControlTask);
 
-  wait(800, msec);
 
+  waitUntil(!Inertial.isCalibrating());
+  test();
   //flywheelAutonTest();
-
   //autonSkills();
+  //soloAWP();
   //rollerStart();
   //nonRollerStart();
-  soloAWP();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -302,6 +343,7 @@ void autonomous(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
+
 double exponentialDrive(double controllerValue) {
   return pow(controllerValue, 3) / pow(100, 2);
 }
@@ -326,100 +368,55 @@ void intakeControl(){
     Intake.stop();
   }
   if (outTakeTrue){
-    Intake.spin(reverse, 60, pct);
+    Intake.spin(reverse, 100, pct);
   }
   else {
     Intake.setStopping(coast);
   }
-  if (Controller1.ButtonX.pressing()){
-    Intake.spin(reverse, 40, pct);
-  }
 }
 
 void puncherControl(){
-  if (Controller1.ButtonUp.PRESSED){  
-    Puncher.set(true);
-    wait(700, msec);
-    Puncher.set(false);
+  if (flyWheelOn && FlyFront.velocity(rpm) > 400)
+  {
+    if (Controller1.ButtonUp.PRESSED){  
+      Puncher.set(true);
+      wait(300, msec);
+      Puncher.set(false);
+    }
+  }
+  else {
+    if (Controller1.ButtonUp.PRESSED){  
+      flyWheelOn = true;
+    } 
   }
 }
 
 void catapultControl(){
-  if (Controller1.ButtonY.PRESSED){  
+  if (Controller1.ButtonY.pressing() && Controller1.ButtonLeft.pressing()){  
     Catapult.set(true);
   }
 }
 
-double flyError = 0;
-double flyPrevError = 0;
-double flyMaxError = 10;
-
-double flykP = 0.5;
-double flykI = 0;
-double flykD = 0;
-
-double flyPowerPID = 0;
-
-void flyPID(int targetRPM) {
-  //Error is equal to the difference between the current facing direction and the target direction
-  flyError = targetRPM - FlyFront.velocity(rpm);
-
-  //use integral if close enough to target
-  // if(fabs(flyError) < flyIntegralBound) {
-  //   flyIntegral += flyError;
-  // }
-  // else {
-  //   flyIntegral = 0;
-  // }
-
-  //reset integral if we pass the target
-  // if(flyError * flyPrevError < 0) {
-  //   turnIntegral = 0;
-  // } 
-
-  flyPrevError = flyError - flyPrevError;
-
-  flyPrevError = flyError;
-
-  flyPowerPID = flyPowerPID + (flyError * flykP  + flyPrevError * flykD);
-
-  //Limit power output to 12V
-    if(flyPowerPID > 12) {
-      flyPowerPID = 12;
-    }
-  
-
-  if(fabs(flyError) < flyMaxError) {
-    flyPowerPID = 0;
-  }
-
-  FlyFront.spin(fwd, flyPowerPID, volt);
-  FlyBack.spin(fwd, flyPowerPID, volt);
-}
-
 void usercontrol(void) {
+  //flywheelTask.stop();
+  DRIVER_CONTROL = true;
+
   Left.resetRotation();
-  Right.resetRotation();
-  Side.resetRotation();
 
   FL.resetRotation();
   FR.resetRotation();
   BL.resetRotation();
   BR.resetRotation();
 
-  double driveAmt;
-  double turnAmt;
-  double strafeAmt;
-
   FL.setBrake(brakeType::brake);
   FR.setBrake(brakeType::brake);
   BL.setBrake(brakeType::brake);
   BR.setBrake(brakeType::brake);
   
-  task odometryTask(positionTracking);
-  task drawFieldTask(drawField);
-  task chassisControlTask(chassisControl);
-  //task flywheelControlTask(FwControlTask);
+  //task odometryTask(positionTracking);
+  //task drawFieldTask(drawField);
+  //task chassisControlTask(chassisControl);
+  task flywheelControlTask(FwControlTask);
 
   FlyFront.setBrake(coast);
   FlyBack.setBrake(coast);
@@ -437,23 +434,10 @@ void usercontrol(void) {
     FR.spin(reverse, leftNewPct, pct);
     BR.spin(reverse, leftNewPct, pct);
 
-    /* DRIVE */
-    // Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
-    // Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
-
-    // driveAmt = exponentialDrive(Controller1.Axis3.value());
-    // turnAmt = exponentialDrive(Controller1.Axis1.value());
-    // strafeAmt = exponentialDrive(Controller1.Axis4.value());
-
-    // FL.spin(directionType::fwd, driveAmt + turnAmt + strafeAmt, velocityUnits::pct);
-    // FR.spin(directionType::fwd, driveAmt - turnAmt - strafeAmt, velocityUnits::pct);
-    // BL.spin(directionType::fwd, driveAmt + turnAmt - strafeAmt, velocityUnits::pct);
-    // BR.spin(directionType::fwd, driveAmt - turnAmt + strafeAmt, velocityUnits::pct);
-
     intakeControl();
     puncherControl();
     catapultControl();
-    flywheelControl(10);
+    //flywheelControl(10);
     //flyPID(400);
 
     if (Controller1.ButtonL1.PRESSED){
@@ -468,17 +452,6 @@ void usercontrol(void) {
 
     //std::cout << FlyFront.velocity(rpm) << std::endl << std::endl;
 
-    // if(abs(Controller1.Axis3.value()) < 5 && abs(Controller1.Axis1.value()) < 5 && abs(Controller1.Axis4.value()) < 5) {
-    //   FL.stop(brakeType::brake);
-    //   FR.stop(brakeType::brake);
-    //   BL.stop(brakeType::brake);
-    //   BR.stop(brakeType::brake);
-    // }
-
-    // if (Controller1.ButtonX.PRESSED){
-    //   turnTo(currentAbsoluteOrientation + M_PI_2, 5000);
-    // }
-
     // std::cout << Brain.Timer.value() << "," 
     //     << FlyFront.velocity(rpm) << "," <<  FlyFront.torque(Nm) << "," 
     //     << FlyFront.current() << "," << FlyFront.voltage(volt)
@@ -487,35 +460,8 @@ void usercontrol(void) {
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
   }
-
-  /*
-  FL.setBrake(brakeType::brake);
-  FR.setBrake(brakeType::brake);
-  BL.setBrake(brakeType::brake);
-  BR.setBrake(brakeType::brake);
-
-  while (1) {
-    float maxSpeed = 100;
-    float leftPct = (Controller1.Axis3.position())/maxSpeed;
-    float rightPct = (Controller1.Axis2.position())/maxSpeed;
-
-    float leftNewPct = leftPct * leftPct *leftPct*100;
-    float rightNewPct = rightPct *rightPct *rightPct*100;
-
-    FR.spin(fwd, rightNewPct, pct);
-    BR.spin(fwd, rightNewPct, pct);
-    FL.spin(fwd, leftNewPct, pct);
-    BL.spin(fwd, leftNewPct, pct);
-
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
-  }
-  */
 }
 
-//
-// Main will set up the competition functions and callbacks.
-//
 int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
@@ -536,7 +482,6 @@ int main() {
   
   // Prevent main from exiting with an infinite loop.
   while (true) {
-    //flywheelControl(10);
     // Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
     // Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
 

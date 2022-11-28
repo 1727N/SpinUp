@@ -3,8 +3,10 @@
 // Update inteval (in mS) for the flywheel control loop
 #define FW_LOOP_SPEED           20
 
+bool DRIVER_CONTROL;
+
 // Maximum power we want to send to the flywheel motors
-#define FW_MAX_POWER            100
+int FW_MAX_POWER    =        100;
 
 // encoder counts per revolution depending on motor
 #define MOTOR_TPR_TURBO         261.333
@@ -250,6 +252,8 @@ int fwTask(){
   }
 }
 
+bool flyWheelOn = false;
+
 /*Task to control the velocity of the flywheel */
 int FwControlTask()
 {
@@ -261,8 +265,20 @@ int FwControlTask()
 
 	while(1)
 	{
-		// Calculate velocity
-		FwCalculateSpeed();
+    if (DRIVER_CONTROL){
+      if (flyWheelOn){
+        FlyFront.spin(fwd, 10, volt);
+        FlyBack.spin(fwd, 10, volt);
+      }
+    else {
+      FlyFront.setStopping(coast);
+      FlyBack.setStopping(coast);
+      FlyFront.stop();
+      FlyBack.stop();
+    }
+      }
+    else {
+      FwCalculateSpeed();
 
 		// Do the velocity TBH calculations
 		FwControlUpdateVelocityTbhR() ;
@@ -284,5 +300,7 @@ int FwControlTask()
 
 		// Run at somewhere between 20 and 50mS
 		task::sleep(FW_LOOP_SPEED);
+    }
+		// Calculate velocity
 	}
 }
