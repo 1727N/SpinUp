@@ -130,8 +130,8 @@ double driveIntegralBound = 1.5;
 
 double driveDerivative = 0;
 
-double drivekP = 5;
-double drivekI = 0;
+double drivekP = 1.3;
+double drivekI = 0.1;
 double drivekD = 0;
 
 double drivePowerPID = 0;
@@ -318,7 +318,7 @@ int chassisControl() {
       BR.spin(directionType::fwd, BackRightPower, voltageUnits::volt);
       
       if (onlyTurn){
-        if (fabs(turnError) < 0.003){
+        if (fabs(turnError) < 0.005){
           restTime++;
         }
         else {
@@ -331,7 +331,7 @@ int chassisControl() {
       }
 
       else {
-        if (fabs(driveError) < 0.1 && fabs(turnError) < 0.003){
+        if (fabs(driveError) < 0.1 && fabs(turnError) < 0.005){
           restTime++;
         }
         else {

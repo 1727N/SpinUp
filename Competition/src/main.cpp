@@ -25,6 +25,7 @@
 // Puncher              digital_out   A               
 // Catapult             digital_out   B               
 // Right                encoder       C, D            
+// Roller               motor         7               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 #include "chassis-control.h"
 #include "draw-field.h"
@@ -61,6 +62,16 @@ void pre_auton(void) {
   std::cout << "IMU Calibrated" << std::endl << std::endl;
 }
 
+void driveForDist(double xDist, int timeOutLength, double maxSpeed){
+  directDrive(xDist, timeOutLength, maxSpeed);
+  waitUntil(runChassisControl == false);
+}
+
+void turnToAngle(int targetAngle, int timeOutLength){
+  turnTo(targetAngle, timeOutLength);
+  waitUntil(runChassisControl == false);
+}
+
 // bool flyWheelOn = false;
 
 // void flywheelControl(int setVolt){
@@ -80,7 +91,7 @@ void shoot(){
   Puncher.set(true);
   wait(300, msec);
   Puncher.set(false);
-  wait(800, msec);
+  wait(400, msec);
 }
 
 /* -------------------------- AUTON PROGRAMS -------------------------- */
@@ -88,81 +99,71 @@ void shoot(){
 //SKILLS
 void autonSkills() {
   THETA_START = 0;
-  FW_MAX_POWER = 88;
-  FwVelocitySet( 93, 0.85 ); 
+  //FW_MAX_POWER = 80;
+  //FwVelocitySet( 93, 0.85 ); 
 
-  directDrive(1, 500, 0.5);
+  directDrive(0.5, 300, 1);
   waitUntil(runChassisControl == false);
 
-  Intake.spin(reverse);
+  Roller.spin(reverse);
   wait(700, msec);
-  Intake.stop();
-
-  directDrive(-2, 1000, 0.6);
-  waitUntil(runChassisControl == false);
-
-  turnTo(14, 1000);
-  waitUntil(runChassisControl == false);
-
-  shoot();
-  FW_MAX_POWER = 89;
-  shoot();
-
-  //SHOOT 2
+  Roller.stop();
   
-  FwVelocitySet( 0, 0.00 );
-  
-  directDrive(-10, 2000, 0.6);
+  directDrive(-10, 2000, 1);
   waitUntil(runChassisControl == false); 
   
-  turnTo(270, 1000);
+  turnTo(270, 2000);
   waitUntil(runChassisControl == false);
 
-  directDrive(10, 1000, 0.6);
+  directDrive(12, 2000, 1);
   waitUntil(runChassisControl == false);
 
-  Intake.spin(fwd);
+  FW_MAX_POWER = 70;
+  FwVelocitySet( 70, 1 );
+
+  Roller.spin(fwd);
   wait(700, msec);
-  Intake.stop();
-
-  directDrive(-8, 1000, 0.6);
+  Roller.stop();
+  
+  directDrive(-30, 4000, 1);
   waitUntil(runChassisControl == false);
 
-  turnTo(180, 2000);
-  waitUntil(runChassisControl == false);
+  turnToAngle(261, 2000);
 
-  directDrive(5, 1500, 0.6);
+  wait(200, msec);
+
+  shoot();
+  shoot();
+
+  FwVelocitySet( 0, 0.00 );
+
+
   //waitUntil(runChassisControl == false);
-}
-
-void flywheelAutonTest(){
-  //flywheelControl(10);
-  //flyWheelOn;
-
-  Flywheel.setVelocity(500, rpm);
-  Flywheel.spin(fwd);
-  FlyFront.spin(fwd);
-  FlyBack.spin(fwd);
 }
 
 void rollerStart(){
   THETA_START = 0;
 
-  Intake.spin(fwd);
+  FW_MAX_POWER = 80;
+  FwVelocitySet( 70, 1 );
+
+  driveForDist(0.5, 500, 1);
+
+  Roller.spin(fwd, 80, pct);
   wait(500, msec);
-  Intake.stop();
+  Roller.stop();
 
   // setVoltage = 12;
   // flywheelSpin = true;
-  FwVelocitySet( 100, 1 );
+  
 
-  directDrive(-2, 2000, 0.6);
+  directDrive(-2, 1000, 0.8);
   waitUntil(runChassisControl == false);
 
-  turnTo(8, 1000);
+  turnTo(10, 2000);
   waitUntil(runChassisControl == false);
 
-  wait(300, msec);
+  wait(200, msec);
 
   shoot();
   shoot();
@@ -236,70 +237,46 @@ void nonRollerStart(){
 }
 
 void soloAWP(){
-  THETA_START = 0;
-  FW_MAX_POWER = 89;
-  FwVelocitySet( 93, 0.85 ); 
+    THETA_START = 0;
 
-  directDrive(1, 1500, 0.5);
-  waitUntil(runChassisControl == false);
+  FW_MAX_POWER = 80;
+  FwVelocitySet( 70, 1 );
 
-  Intake.spin(reverse);
+  driveForDist(0.5, 500, 1);
+
+  Roller.spin(fwd, 80, pct);
   wait(500, msec);
-  Intake.stop();
+  Roller.stop();
+
+  // setVoltage = 12;
+  // flywheelSpin = true;
   
-  directDrive(-2, 2000, 0.6);
+
+  directDrive(-2, 1000, 0.8);
   waitUntil(runChassisControl == false);
 
-  turnTo(7, 1500);
+  turnTo(10, 2000);
   waitUntil(runChassisControl == false);
 
-  wait(1000, msec);
+  wait(200, msec);
 
   shoot();
-  FW_MAX_POWER = 89;
   shoot();
 
   //SHOOT 2
-  
+  //
   FwVelocitySet( 0, 0.00 );
-  
 
-  turnTo(130, 2000);
+  turnTo(133, 2000);
   waitUntil(runChassisControl == false);
+  driveForDist(65, 4000, 1);
 
-  // Intake.spin(fwd);
-  // directDrive(66, 6000, 1);
-  // waitUntil(runChassisControl == false);
-  // Intake.stop();
+  turnTo(90, 1000);
+  driveForDist(3, 1, 1);
 
-  // turnTo(90, 1000);
-  // waitUntil(runChassisControl == false);
-
-  // directDrive(2, 1000, 1);
-  // waitUntil(runChassisControl == false);
-
-  // Intake.spin(reverse);
-  // wait(500, msec);
-  // Intake.stop();
-
-  FW_MAX_POWER = 100;
-}
-
-void driveFor(int xDist, int timeOutLength, int maxSpeed){
-  directDrive(xDist, timeOutLength, maxSpeed);
-  waitUntil(runChassisControl == false);
-}
-
-void turnToAngle(int targetAngle, int timeOutLength){
-  turnTo(targetAngle, timeOutLength);
-  waitUntil(runChassisControl == false);
-}
-
-void test(){
-  FW_MAX_POWER = 89;
-  FwVelocitySet( 93, 0.85 ); 
-  //turnToAngle(10, 10000);
-  //driveFor(24, 10000, 1);
+  Roller.spin(fwd, 80, pct);
+  wait(500, msec);
+  Roller.stop();
 }
 
 void autonomous(void) {
@@ -326,11 +303,12 @@ void autonomous(void) {
 
 
   waitUntil(!Inertial.isCalibrating());
-  test();
+
   //flywheelAutonTest();
-  //autonSkills();
+  autonSkills();
   //soloAWP();
   //rollerStart();
+  //turnTo(8, 2000);
   //nonRollerStart();
 }
 
@@ -380,7 +358,7 @@ void puncherControl(){
   {
     if (Controller1.ButtonUp.PRESSED){  
       Puncher.set(true);
-      wait(300, msec);
+      wait(200, msec);
       Puncher.set(false);
     }
   }
@@ -394,6 +372,15 @@ void puncherControl(){
 void catapultControl(){
   if (Controller1.ButtonY.pressing() && Controller1.ButtonLeft.pressing()){  
     Catapult.set(true);
+  }
+}
+
+void rollerControl(){
+  if (Controller1.ButtonA.pressing()){
+    Roller.spin(fwd, 40, pct);
+  }
+  else {
+    Roller.stop(coast);
   }
 }
 
@@ -437,6 +424,7 @@ void usercontrol(void) {
     intakeControl();
     puncherControl();
     catapultControl();
+    rollerControl();
     //flywheelControl(10);
     //flyPID(400);
 
