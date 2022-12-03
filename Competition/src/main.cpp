@@ -22,9 +22,8 @@
 // FlyBack              motor         6               
 // Vision               vision        3               
 // Intake               motor         12              
-// Puncher              digital_out   A               
-// Catapult             digital_out   B               
-// Right                encoder       C, D            
+// Puncher              digital_out   C               
+// Catapult             digital_out   D               
 // Roller               motor         7               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 #include "chassis-control.h"
@@ -72,21 +71,6 @@ void turnToAngle(int targetAngle, int timeOutLength){
   waitUntil(runChassisControl == false);
 }
 
-// bool flyWheelOn = false;
-
-// void flywheelControl(int setVolt){
-//   if (flyWheelOn){
-//     FlyFront.spin(fwd, setVolt, volt);
-//     FlyBack.spin(fwd, setVolt, volt);
-//   }
-//   else {
-//     FlyFront.setStopping(coast);
-//     FlyBack.setStopping(coast);
-//     FlyFront.stop();
-//     FlyBack.stop();
-//   }
-// }
-
 void shoot(){
   Puncher.set(true);
   wait(300, msec);
@@ -94,25 +78,31 @@ void shoot(){
   wait(400, msec);
 }
 
+void rollFor(int timeRoll){
+  Roller.spin(reverse, 60, pct);
+  wait(timeRoll, msec);
+  Roller.stop();
+}
+
+void pidDemo(){
+  turnTo(180, 20000);
+}
+
 /* -------------------------- AUTON PROGRAMS -------------------------- */
 
 //SKILLS
 void autonSkills() {
   THETA_START = 0;
-  //FW_MAX_POWER = 80;
-  //FwVelocitySet( 93, 0.85 ); 
 
   directDrive(0.5, 300, 1);
   waitUntil(runChassisControl == false);
 
-  Roller.spin(reverse);
-  wait(700, msec);
-  Roller.stop();
+  rollFor(300);
   
-  directDrive(-10, 2000, 1);
+  directDrive(-9, 2000, 1);
   waitUntil(runChassisControl == false); 
   
-  turnTo(270, 2000);
+  turnTo(270, 2500);
   waitUntil(runChassisControl == false);
 
   directDrive(12, 2000, 1);
@@ -121,9 +111,7 @@ void autonSkills() {
   FW_MAX_POWER = 70;
   FwVelocitySet( 70, 1 );
 
-  Roller.spin(fwd);
-  wait(700, msec);
-  Roller.stop();
+  rollFor(300);
   
   directDrive(-30, 4000, 1);
   waitUntil(runChassisControl == false);
@@ -137,11 +125,85 @@ void autonSkills() {
 
   FwVelocitySet( 0, 0.00 );
 
+  turnToAngle(0, 2000);
 
-  //waitUntil(runChassisControl == false);
+  driveForDist(-25, 10000, 1);
+
+  turnToAngle(90, 3000);
+
+  driveForDist(16, 8000, 1);
+
+  rollFor(300);
+
+  driveForDist(-8, 3000, 1);
+
+  turnToAngle(180, 3000);
+
+  driveForDist(-10, 3000, 1);
+
+  rollFor(300);
+
+  driveForDist(-5, 2000, 1);
+
+  turnToAngle(135, 2000);
 }
 
 void rollerStart(){
+  THETA_START = 0;
+
+  FW_MAX_POWER = 80;
+  //FwVelocitySet( 70, 1 );
+
+  driveForDist(0.5, 500, 1);
+
+  Roller.spin(fwd, 60, pct);
+  wait(300, msec);
+  Roller.stop();
+
+  directDrive(-2, 1000, 0.8);
+  waitUntil(runChassisControl == false);
+
+  turnTo(10, 2000);
+  waitUntil(runChassisControl == false);
+
+  wait(200, msec);
+
+  //shoot();
+  //shoot(); 
+
+  //FwVelocitySet( 0, 0.00 ); 
+
+  // Intake.spin(fwd);
+
+  // turnTo(130, 2000);
+  // waitUntil(runChassisControl == false);
+  // FwVelocitySet( 0, 0.00 ); 
+
+  // Intake.spin(fwd);
+  // directDrive(40, 5000, 1);
+  // waitUntil(runChassisControl == false);
+  // Intake.stop();
+
+  // turnTo(45, 1500);
+
+  // shoot();
+  // shoot();
+  // shoot();
+}
+
+void nonRollerStart(){
+  THETA_START = 0;
+
+  driveForDist(13, 3000, 1);
+  turnToAngle(270, 2000);
+  driveForDist(2, 3000, 1);
+
+  Roller.spin(fwd);
+  wait(500, msec);
+  Roller.stop();
+}
+
+void soloAWP(){
   THETA_START = 0;
 
   FW_MAX_POWER = 80;
@@ -153,10 +215,6 @@ void rollerStart(){
   wait(500, msec);
   Roller.stop();
 
-  // setVoltage = 12;
-  // flywheelSpin = true;
-  
-
   directDrive(-2, 1000, 0.8);
   waitUntil(runChassisControl == false);
 
@@ -168,103 +226,6 @@ void rollerStart(){
   shoot();
   shoot();
 
-  //SHOOT 2
-  //
-  FwVelocitySet( 0, 0.00 );
-  
-
-  turnTo(135, 2000);
-  waitUntil(runChassisControl == false);
-
-  Intake.spin(fwd);
-  directDrive(40, 5000, 1);
-  waitUntil(runChassisControl == false);
-  Intake.stop();
-
-  turnTo(45, 1500);
-
-  //SHOOT 3
-  //
-  shoot();
-  shoot();
-  shoot();
-
-  
-}
-
-void nonRollerStart(){
-  THETA_START = M_PI_2;
-
-  Intake.spin(fwd);
-  // go forward && intake 1
-  directDrive(5, 2000, 1);
-  waitUntil(runChassisControl == false);
-
-  FwVelocitySet( 100, 0.80 );
-  turnTo(225, 2000);
-  waitUntil(runChassisControl == false);
-
-  // shoot 3
-  wait(2, sec);
-  FwVelocitySet( 0, 0.00 );
-
-  turnTo(135, 2000);
-  waitUntil(runChassisControl == false);
-  
-  // go forward and intake 2
-  directDrive(5, 2000, 1);
-  waitUntil(runChassisControl == false);
-  FwVelocitySet( 100, 0.80 );
-  turnTo(225, 2000);
-  waitUntil(runChassisControl == false);
-  Intake.stop();
-  
-  //shoot 2
-  wait(2, sec);
-  FwVelocitySet( 0, 0.00 );
-
-  //go back
-  turnTo(315, 2000);
-  waitUntil(runChassisControl == false);
-  directDrive(10, 3000, 1);
-  waitUntil(runChassisControl == false);
-  turnTo(270, 1000);
-  waitUntil(runChassisControl == false);
-
-  Intake.spin(fwd);
-  wait(500, msec);
-  Intake.stop();
-}
-
-void soloAWP(){
-    THETA_START = 0;
-
-  FW_MAX_POWER = 80;
-  FwVelocitySet( 70, 1 );
-
-  driveForDist(0.5, 500, 1);
-
-  Roller.spin(fwd, 80, pct);
-  wait(500, msec);
-  Roller.stop();
-
-  // setVoltage = 12;
-  // flywheelSpin = true;
-  
-
-  directDrive(-2, 1000, 0.8);
-  waitUntil(runChassisControl == false);
-
-  turnTo(10, 2000);
-  waitUntil(runChassisControl == false);
-
-  wait(200, msec);
-
-  shoot();
-  shoot();
-
-  //SHOOT 2
-  //
   FwVelocitySet( 0, 0.00 );
 
   turnTo(133, 2000);
@@ -286,7 +247,7 @@ void autonomous(void) {
 
   //reset sensors
   Left.resetRotation();
-  Right.resetRotation();
+  //Right.resetRotation();
   Side.resetRotation();
 
   FL.resetRotation();
@@ -304,11 +265,11 @@ void autonomous(void) {
 
   waitUntil(!Inertial.isCalibrating());
 
-  //flywheelAutonTest();
-  autonSkills();
+  //autonSkills();
   //soloAWP();
+  
+  
   //rollerStart();
-  //turnTo(8, 2000);
   //nonRollerStart();
 }
 
@@ -354,7 +315,7 @@ void intakeControl(){
 }
 
 void puncherControl(){
-  if (flyWheelOn && FlyFront.velocity(rpm) > 400)
+  if (flyWheelOn && FlyFront.velocity(rpm) > 300)
   {
     if (Controller1.ButtonUp.PRESSED){  
       Puncher.set(true);
@@ -370,7 +331,7 @@ void puncherControl(){
 }
 
 void catapultControl(){
-  if (Controller1.ButtonY.pressing() && Controller1.ButtonLeft.pressing()){  
+  if (Controller1.ButtonY.pressing() && Controller1.ButtonRight.pressing()){  
     Catapult.set(true);
   }
 }

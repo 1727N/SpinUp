@@ -22,9 +22,8 @@ motor FlyBack = motor(PORT6, ratio6_1, false);
 vision Vision = vision (PORT3, 50);
 /*vex-vision-config:end*/
 motor Intake = motor(PORT12, ratio18_1, true);
-digital_out Puncher = digital_out(Brain.ThreeWirePort.A);
-digital_out Catapult = digital_out(Brain.ThreeWirePort.B);
-encoder Right = encoder(Brain.ThreeWirePort.C);
+digital_out Puncher = digital_out(Brain.ThreeWirePort.C);
+digital_out Catapult = digital_out(Brain.ThreeWirePort.D);
 motor Roller = motor(PORT7, ratio18_1, false);
 
 // VEXcode generated functions
