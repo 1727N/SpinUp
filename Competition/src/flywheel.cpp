@@ -254,6 +254,51 @@ int fwTask(){
 
 bool flyWheelOn = false;
 
+double flyError = 0;
+double flyPrevError = 0;
+
+double flyMaxError = 10;
+double flyIntegral = 0;
+double flyIntegralBound = 1.5;
+
+double flyDerivative = 0;
+
+double flykP = 0.05;
+double flykI = 0;
+double flykD = 0;
+
+double flyPowerPID = 0;
+
+void flyWheelPID(){
+  double targetRPM = 600;
+  double currentRPM = FlyFront.velocity(rpm);
+
+  flyError = targetRPM - currentRPM;
+
+  if(fabs(flyError) < flyIntegralBound) {
+    flyIntegral += flyError;
+  }
+  else {
+    flyIntegral = 0;
+  }
+
+  if(flyError * flyPrevError < 0) {
+    flyIntegral = 0;
+  } 
+
+  flyDerivative = flyError - flyPrevError;
+
+  flyPrevError = flyError;
+
+  flyPowerPID += (flyError * flykP + flyIntegral * flykI + flyDerivative * flykD);
+
+  if (flyPowerPID < 0){
+    flyPowerPID = 0;
+  }
+
+  //https://www.vexforum.com/t/flywheel-velocity-pid/56914/12
+}
+
 /*Task to control the velocity of the flywheel */
 int FwControlTask()
 {
@@ -265,20 +310,24 @@ int FwControlTask()
 
 	while(1)
 	{
+    if ((int) Brain.timer(msec) % 300 == 0){
+          Controller1.Screen.clearScreen();
+          Controller1.Screen.setCursor(1,1);
+          Controller1.Screen.print(FlyFront.velocity(rpm));
+        }
     if (DRIVER_CONTROL){
       if (flyWheelOn){
-        FlyFront.spin(fwd, 10, volt);
-        FlyBack.spin(fwd, 10, volt);
+        flyWheelPID();
+        FlyFront.spin(fwd, flyPowerPID, volt);
+        FlyBack.spin(fwd, flyPowerPID, volt);
       }
-    else {
-      FlyFront.setStopping(coast);
-      FlyBack.setStopping(coast);
-      FlyFront.stop();
-      FlyBack.stop();
+      else {
+        FlyFront.stop(coast);
+        FlyBack.stop(coast);
+      }
     }
-      }
     else {
-      FwCalculateSpeed();
+    FwCalculateSpeed();
 
 		// Do the velocity TBH calculations
 		FwControlUpdateVelocityTbhR() ;

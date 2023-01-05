@@ -11,10 +11,10 @@
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
 // Controller1          controller                    
-// FL                   motor         11              
-// FR                   motor         1               
-// BL                   motor         19              
-// BR                   motor         9               
+// FL                   motor         1               
+// FR                   motor         9               
+// BL                   motor         11              
+// BR                   motor         20              
 // Inertial             inertial      17              
 // Left                 encoder       G, H            
 // Side                 encoder       E, F            
@@ -22,9 +22,11 @@
 // FlyBack              motor         6               
 // Vision               vision        3               
 // Intake               motor         12              
-// Puncher              digital_out   C               
-// Catapult             digital_out   D               
+// Puncher              digital_out   A               
+// Catapult             digital_out   B               
+// Right                encoder       C, D            
 // Roller               motor         7               
+// Indexer              motor         4               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 #include "chassis-control.h"
 #include "draw-field.h"
@@ -298,19 +300,24 @@ void intakeControl(){
   else if (Controller1.ButtonR2.pressing()){
    intakeTrue = false;
    Intake.stop();
+   Indexer.stop();
   }
   if (intakeTrue){
    Intake.spin(fwd, intakePct, pct);
+   Indexer.spin(fwd, intakePct, pct);
   }
   if(Controller1.ButtonB.PRESSED) {
     outTakeTrue = !outTakeTrue;
     Intake.stop();
+    Indexer.stop();
   }
   if (outTakeTrue){
     Intake.spin(reverse, 100, pct);
+    Indexer.spin(reverse, 100, pct);
   }
   else {
     Intake.setStopping(coast);
+    Indexer.setStopping(coast);
   }
 }
 
@@ -377,10 +384,10 @@ void usercontrol(void) {
     float leftNewPct = leftPct * leftPct * leftPct * 100;
     float rightNewPct = rightPct * rightPct * rightPct * 100;
 
-    FL.spin(reverse, rightNewPct, pct);
-    BL.spin(reverse, rightNewPct, pct);
-    FR.spin(reverse, leftNewPct, pct);
-    BR.spin(reverse, leftNewPct, pct);
+    FL.spin(fwd, leftNewPct, pct);
+    BL.spin(fwd, leftNewPct, pct);
+    FR.spin(fwd, rightNewPct, pct);
+    BR.spin(fwd, rightNewPct, pct);
 
     intakeControl();
     puncherControl();
