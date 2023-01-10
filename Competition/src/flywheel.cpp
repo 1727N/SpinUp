@@ -1,4 +1,5 @@
 #include "flywheel.h"
+#include <iostream>
 
 // Update inteval (in mS) for the flywheel control loop
 #define FW_LOOP_SPEED           20
@@ -153,8 +154,8 @@ FwCalculateSpeed()
 	encoder_counts_lastL = encoder_countsL;
 
 	// Calculate velocity in rpm
-	motor_velocityR = (1000.0 / delta_msR) * delta_encR * 60.0 / ticks_per_rev;
-	motor_velocityL = (1000.0 / delta_msL) * delta_encL * 60.0 / ticks_per_rev;
+	motor_velocityR = FlyFront.velocity(rpm);//(1000.0 / delta_msR) * delta_encR * 60.0 / ticks_per_rev;
+	motor_velocityL = FlyBack.velocity(rpm);//(1000.0 / delta_msL) * delta_encL * 60.0 / ticks_per_rev;
 }
 
 /*Update the velocity tbh controller variables RIGHT*/
@@ -257,21 +258,21 @@ bool flyWheelOn = false;
 double flyError = 0;
 double flyPrevError = 0;
 
-double flyMaxError = 10;
+double flyMaxError = 1;
 double flyIntegral = 0;
-double flyIntegralBound = 1.5;
+double flyIntegralBound = 1;
 
 double flyDerivative = 0;
 
-double flykP = 0.05;
+double flykP = 0.001;
 double flykI = 0;
 double flykD = 0;
 
 double flyPowerPID = 0;
 
 void flyWheelPID(){
-  double targetRPM = 600;
-  double currentRPM = FlyFront.velocity(rpm);
+  double targetRPM = 720;
+  double currentRPM = FlyFront.position(deg);//FlyFront.velocity(rpm);
 
   flyError = targetRPM - currentRPM;
 
@@ -290,14 +291,20 @@ void flyWheelPID(){
 
   flyPrevError = flyError;
 
-  flyPowerPID += (flyError * flykP + flyIntegral * flykI + flyDerivative * flykD);
+  flyPowerPID = (flyError * flykP + flyIntegral * flykI + flyDerivative * flykD);
 
   if (flyPowerPID < 0){
-    flyPowerPID = 0;
+    //flyPowerPID = 0;
+  }
+
+  if (flyPowerPID > 10){
+    flyPowerPID = 10;
   }
 
   //https://www.vexforum.com/t/flywheel-velocity-pid/56914/12
 }
+
+int loopCount;
 
 /*Task to control the velocity of the flywheel */
 int FwControlTask()
@@ -310,10 +317,32 @@ int FwControlTask()
 
 	while(1)
 	{
-    if ((int) Brain.timer(msec) % 300 == 0){
+    loopCount++;
+    if (Controller1.ButtonA.PRESSED){
+      flykP += 0.001;
+    }
+    if (Controller1.ButtonB.PRESSED){
+      flykI += 0.001;
+    }
+    if (Controller1.ButtonX.PRESSED){
+      flykD += 0.001;
+    }
+    if (loopCount == 10000){
       Controller1.Screen.clearScreen();
       Controller1.Screen.setCursor(1,1);
-      Controller1.Screen.print(FlyFront.velocity(rpm));
+      Controller1.Screen.print(720-FlyFront.position(deg));//600-FlyFront.velocity(rpm));
+
+      Controller1.Screen.setCursor(2,1);
+      Controller1.Screen.print(flykP);
+
+      Controller1.Screen.setCursor(2,7);
+      Controller1.Screen.print(flykI);
+
+      Controller1.Screen.setCursor(2,13);
+      Controller1.Screen.print(flykD);
+
+      std::cout << "p " << flykP << "i " << flykI << "d" << flykD << std::endl << std::endl;
+      loopCount = 0;
     }
     if (DRIVER_CONTROL){
       if (flyWheelOn){
