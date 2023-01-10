@@ -4,7 +4,7 @@
 
 double goalSize = 7.865 * scale;
 
-int robotSize = 15;
+int robotSize = 15 * scale;
 
 double lineOffset1 = 0;
 double lineOffset2 = 0;

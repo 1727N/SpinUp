@@ -348,7 +348,6 @@ int chassisControl() {
         std::cout << "TIMED OUT ------------------>" << std::endl << std::endl;
       }
 
-      std::cout << "Revs: " << Left.position(rev) << std::endl;
       std::cout << "Rest: " << restTime << std::endl;
       std::cout << "Drive Error: " << driveError << std::endl;
       std::cout << "Turn Error: " << (turnError * toDegrees) << std::endl;

@@ -311,10 +311,10 @@ int FwControlTask()
 	while(1)
 	{
     if ((int) Brain.timer(msec) % 300 == 0){
-          Controller1.Screen.clearScreen();
-          Controller1.Screen.setCursor(1,1);
-          Controller1.Screen.print(FlyFront.velocity(rpm));
-        }
+      Controller1.Screen.clearScreen();
+      Controller1.Screen.setCursor(1,1);
+      Controller1.Screen.print(FlyFront.velocity(rpm));
+    }
     if (DRIVER_CONTROL){
       if (flyWheelOn){
         flyWheelPID();

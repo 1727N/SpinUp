@@ -59,8 +59,6 @@ void pre_auton(void) {
 
   //roller: 0, nonroller: 270, AWP = 0
   Inertial.setHeading(0, degrees);
-
-  std::cout << "IMU Calibrated" << std::endl << std::endl;
 }
 
 void driveForDist(double xDist, int timeOutLength, double maxSpeed){
@@ -86,68 +84,11 @@ void rollFor(int timeRoll){
   Roller.stop();
 }
 
-void pidDemo(){
-  turnTo(180, 20000);
-}
-
 /* -------------------------- AUTON PROGRAMS -------------------------- */
 
 //SKILLS
 void autonSkills() {
-  THETA_START = 0;
 
-  directDrive(0.5, 300, 1);
-  waitUntil(runChassisControl == false);
-
-  rollFor(300);
-  
-  directDrive(-9, 2000, 1);
-  waitUntil(runChassisControl == false); 
-  
-  turnTo(270, 2500);
-  waitUntil(runChassisControl == false);
-
-  directDrive(12, 2000, 1);
-  waitUntil(runChassisControl == false);
-
-  FW_MAX_POWER = 70;
-  FwVelocitySet( 70, 1 );
-
-  rollFor(300);
-  
-  directDrive(-30, 4000, 1);
-  waitUntil(runChassisControl == false);
-
-  turnToAngle(261, 2000);
-
-  wait(200, msec);
-
-  shoot();
-  shoot();
-
-  FwVelocitySet( 0, 0.00 );
-
-  turnToAngle(0, 2000);
-
-  driveForDist(-25, 10000, 1);
-
-  turnToAngle(90, 3000);
-
-  driveForDist(16, 8000, 1);
-
-  rollFor(300);
-
-  driveForDist(-8, 3000, 1);
-
-  turnToAngle(180, 3000);
-
-  driveForDist(-10, 3000, 1);
-
-  rollFor(300);
-
-  driveForDist(-5, 2000, 1);
-
-  turnToAngle(135, 2000);
 }
 
 void rollerStart(){
@@ -263,14 +204,13 @@ void autonomous(void) {
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
   task flywheelTask(FwControlTask);
+  // flywheelTask = task(FwControlTask);
 
 
   waitUntil(!Inertial.isCalibrating());
 
   //autonSkills();
   //soloAWP();
-  
-  
   //rollerStart();
   //nonRollerStart();
 }
@@ -354,6 +294,9 @@ void rollerControl(){
 
 void usercontrol(void) {
   //flywheelTask.stop();
+
+  //https://www.vexforum.com/t/what-do-you-think-is-a-more-efficient-way-to-drive-your-robot/64857/35
+
   DRIVER_CONTROL = true;
 
   Left.resetRotation();
@@ -378,11 +321,20 @@ void usercontrol(void) {
 
   while (1) {
     float maxSpeed = 100;
-    float leftPct = (Controller1.Axis3.position())/maxSpeed;
-    float rightPct = (Controller1.Axis2.position())/maxSpeed;
+    // float leftPct = (Controller1.Axis3.position())/maxSpeed;
+    // float rightPct = (Controller1.Axis2.position())/maxSpeed;
 
-    float leftNewPct = leftPct * leftPct * leftPct * 100;
-    float rightNewPct = rightPct * rightPct * rightPct * 100;
+    // float leftNewPct = leftPct * leftPct * leftPct * 100;
+    // float rightNewPct = rightPct * rightPct * rightPct * 100;
+
+    int exp = 2;
+
+    float leftPct = (Controller1.Axis3.position());
+    float rightPct = (Controller1.Axis2.position());
+
+    float leftNewPct = pow(leftPct, exp)/pow(maxSpeed, exp-1);
+    float rightNewPct = pow(rightPct, exp)/pow(maxSpeed, exp-1);
+
 
     FL.spin(fwd, leftNewPct, pct);
     BL.spin(fwd, leftNewPct, pct);
@@ -393,8 +345,6 @@ void usercontrol(void) {
     puncherControl();
     catapultControl();
     rollerControl();
-    //flywheelControl(10);
-    //flyPID(400);
 
     if (Controller1.ButtonL1.PRESSED){
       flyWheelOn = true;
