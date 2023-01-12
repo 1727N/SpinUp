@@ -247,7 +247,7 @@ void intakeControl(){
    Indexer.spin(fwd, intakePct, pct);
   }
   if(Controller1.ButtonB.PRESSED) {
-    outTakeTrue = !outTakeTrue;
+    //outTakeTrue = !outTakeTrue;
     Intake.stop();
     Indexer.stop();
   }

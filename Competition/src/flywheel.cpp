@@ -258,23 +258,30 @@ bool flyWheelOn = false;
 double flyError = 0;
 double flyPrevError = 0;
 
-double flyMaxError = 1;
+double flyMaxError = 5;
 double flyIntegral = 0;
 double flyIntegralBound = 1;
 
 double flyDerivative = 0;
 
-double flykP = 0.001;
+double flykP = 5;
 double flykI = 0;
 double flykD = 0;
 
 double flyPowerPID = 0;
 
-void flyWheelPID(){
-  double targetRPM = 720;
-  double currentRPM = FlyFront.position(deg);//FlyFront.velocity(rpm);
+double targetVelocity = 400;
 
-  flyError = targetRPM - currentRPM;
+void flyWheelPID(){
+  double scaledkP = 0.000001*flykP;
+  double currentRPM = (FlyFront.velocity(rpm) + FlyBack.velocity(rpm))/2;
+
+  flyError = targetVelocity - currentRPM;
+
+  if (flyError > 150){
+    flyPowerPID = 12;
+    return;
+  }
 
   if(fabs(flyError) < flyIntegralBound) {
     flyIntegral += flyError;
@@ -291,14 +298,16 @@ void flyWheelPID(){
 
   flyPrevError = flyError;
 
-  flyPowerPID = (flyError * flykP + flyIntegral * flykI + flyDerivative * flykD);
+  double iteratedPID = (flyError * scaledkP + flyIntegral * flykI + flyDerivative * flykD);
+
+  flyPowerPID += iteratedPID;
 
   if (flyPowerPID < 0){
-    //flyPowerPID = 0;
+    flyPowerPID = 0;
   }
 
-  if (flyPowerPID > 10){
-    flyPowerPID = 10;
+  if (flyPowerPID > 12){
+    flyPowerPID = 12;
   }
 
   //https://www.vexforum.com/t/flywheel-velocity-pid/56914/12
@@ -318,11 +327,11 @@ int FwControlTask()
 	while(1)
 	{
     loopCount++;
-    if (Controller1.ButtonA.PRESSED){
-      flykP += 0.001;
+    if (Controller1.ButtonX.PRESSED){
+      flykP += 1;
     }
-    if (Controller1.ButtonB.PRESSED){
-      flykI += 0.001;
+    if (Controller1.ButtonA.PRESSED){
+      flykP = flykP - 1;
     }
     if (Controller1.ButtonX.PRESSED){
       flykD += 0.001;
@@ -330,7 +339,7 @@ int FwControlTask()
     if (loopCount == 10000){
       Controller1.Screen.clearScreen();
       Controller1.Screen.setCursor(1,1);
-      Controller1.Screen.print(720-FlyFront.position(deg));//600-FlyFront.velocity(rpm));
+      Controller1.Screen.print(FlyFront.velocity(rpm));
 
       Controller1.Screen.setCursor(2,1);
       Controller1.Screen.print(flykP);
@@ -347,6 +356,7 @@ int FwControlTask()
     if (DRIVER_CONTROL){
       if (flyWheelOn){
         flyWheelPID();
+        //flyPowerPID = 12;
         FlyFront.spin(fwd, flyPowerPID, volt);
         FlyBack.spin(fwd, flyPowerPID, volt);
       }
