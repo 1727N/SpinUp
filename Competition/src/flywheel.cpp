@@ -7,7 +7,7 @@
 bool DRIVER_CONTROL;
 
 // Maximum power we want to send to the flywheel motors
-int FW_MAX_POWER    =        100;
+double FW_MAX_POWER    =        12;
 
 // encoder counts per revolution depending on motor
 #define MOTOR_TPR_TURBO         261.333
@@ -54,14 +54,14 @@ long            motor_driveL;            /// LEFT
 void
 FwMotorSetR( int valueR )
 {
-  FlyFront.spin(fwd, valueR, pct);
+  FlyFront.spin(fwd, valueR, volt);
 }
 
 /*Set the flywheen motors LEFT */
 void
 FwMotorSetL( int valueL )
 {
-	FlyBack.spin(fwd, valueL, pct);
+	FlyBack.spin(fwd, valueL, volt);
 }
 
 
@@ -129,29 +129,29 @@ void FwVelocitySet( int velocity, float predicted_drive){
 void
 FwCalculateSpeed()
 {
-	int     delta_msR;
-	int     delta_msL;
-	int     delta_encR;
-	int     delta_encL;
+	// int     delta_msR;
+	// int     delta_msL;
+	// int     delta_encR;
+	// int     delta_encL;
 
-	// Get current encoder value
-	encoder_countsR = FwMotorEncoderGetR();
-	encoder_countsL = FwMotorEncoderGetL();
+	// // Get current encoder value
+	// encoder_countsR = FwMotorEncoderGetR();
+	// encoder_countsL = FwMotorEncoderGetL();
 
-	// This is just used so we don't need to know how often we are called
-	// how many mS since we were last here
-	delta_msR = vex::timer::system() - nSysTime_lastR;
-	nSysTime_lastR = vex::timer::system();
-	delta_msL = vex::timer::system() - nSysTime_lastL;
-	nSysTime_lastL = vex::timer::system();
+	// // This is just used so we don't need to know how often we are called
+	// // how many mS since we were last here
+	// delta_msR = vex::timer::system() - nSysTime_lastR;
+	// nSysTime_lastR = vex::timer::system();
+	// delta_msL = vex::timer::system() - nSysTime_lastL;
+	// nSysTime_lastL = vex::timer::system();
 
-	// Change in encoder count
-	delta_encR = (encoder_countsR - encoder_counts_lastR);
-	delta_encL = (encoder_countsL - encoder_counts_lastL);
+	// // Change in encoder count
+	// delta_encR = (encoder_countsR - encoder_counts_lastR);
+	// delta_encL = (encoder_countsL - encoder_counts_lastL);
 
-	// save last position
-	encoder_counts_lastR = encoder_countsR;
-	encoder_counts_lastL = encoder_countsL;
+	// // save last position
+	// encoder_counts_lastR = encoder_countsR;
+	// encoder_counts_lastL = encoder_countsL;
 
 	// Calculate velocity in rpm
 	motor_velocityR = FlyFront.velocity(rpm);//(1000.0 / delta_msR) * delta_encR * 60.0 / ticks_per_rev;
@@ -264,7 +264,7 @@ double flyIntegralBound = 1;
 
 double flyDerivative = 0;
 
-double flykP = 5;
+double flykP = 0.07;
 double flykI = 0;
 double flykD = 0;
 
@@ -273,15 +273,16 @@ double flyPowerPID = 0;
 double targetVelocity = 400;
 
 void flyWheelPID(){
-  double scaledkP = 0.000001*flykP;
+  double scaledkP = 1*flykP;
+  double scaledkD = 0.000001*flykD;
   double currentRPM = (FlyFront.velocity(rpm) + FlyBack.velocity(rpm))/2;
 
   flyError = targetVelocity - currentRPM;
 
-  if (flyError > 150){
-    flyPowerPID = 12;
-    return;
-  }
+  // if (flyError > 250){
+  //   flyPowerPID = 12;
+  //   return;
+  // }
 
   if(fabs(flyError) < flyIntegralBound) {
     flyIntegral += flyError;
@@ -298,9 +299,9 @@ void flyWheelPID(){
 
   flyPrevError = flyError;
 
-  double iteratedPID = (flyError * scaledkP + flyIntegral * flykI + flyDerivative * flykD);
+  double iteratedPID = (flyError * scaledkP + flyIntegral * flykI + flyDerivative * scaledkD);
 
-  flyPowerPID += iteratedPID;
+  flyPowerPID = iteratedPID;
 
   if (flyPowerPID < 0){
     flyPowerPID = 0;
@@ -314,32 +315,42 @@ void flyWheelPID(){
 }
 
 int loopCount;
+int scaleGain = 1;
 
 /*Task to control the velocity of the flywheel */
 int FwControlTask()
 {
 	// Set the gain
-	gain = 0.00025;
+  
 
 	// Set the encoder ticks per revolution
 	ticks_per_rev = MOTOR_TPR_TURBO;
 
 	while(1)
 	{
+	  gain = 0.00001 * scaleGain;
     loopCount++;
     if (Controller1.ButtonX.PRESSED){
-      flykP += 1;
+      // flykP += 1;
+      scaleGain += 1;
     }
-    if (Controller1.ButtonA.PRESSED){
-      flykP = flykP - 1;
+    if (Controller1.ButtonB.PRESSED){
+      //flykP -= 1;
+      scaleGain -= 1;
     }
-    if (Controller1.ButtonX.PRESSED){
-      flykD += 0.001;
+    if (Controller1.ButtonUp.PRESSED){
+      flykD += 1;
+    }
+    if (Controller1.ButtonDown.PRESSED){
+      flykD -= 1;
     }
     if (loopCount == 10000){
       Controller1.Screen.clearScreen();
       Controller1.Screen.setCursor(1,1);
       Controller1.Screen.print(FlyFront.velocity(rpm));
+
+      // Controller1.Screen.setCursor(2,1);
+      // Controller1.Screen.print(scaleGain);
 
       Controller1.Screen.setCursor(2,1);
       Controller1.Screen.print(flykP);
@@ -350,7 +361,10 @@ int FwControlTask()
       Controller1.Screen.setCursor(2,13);
       Controller1.Screen.print(flykD);
 
-      std::cout << "p " << flykP << "i " << flykI << "d" << flykD << std::endl << std::endl;
+      Controller1.Screen.setCursor(3,1);
+      Controller1.Screen.print(FlyFront.voltage());
+
+      std::cout << "p " << flykP << "i " << flykI << "d " << flykD << std::endl << std::endl;
       loopCount = 0;
     }
     if (DRIVER_CONTROL){
@@ -377,17 +391,14 @@ int FwControlTask()
 		motor_driveL  = (driveL * FW_MAX_POWER) + 0.5;
 
 		// Final Limit of motor values - don't really need this
-		if( motor_driveR >  100 ) motor_driveR =  100;
-		if( motor_driveR < -100 ) motor_driveR = -100;
-		if( motor_driveL >  100 ) motor_driveL =  100;
-		if( motor_driveL < -100 ) motor_driveL = -100;
+		if( motor_driveR >  12 ) motor_driveR =  12;
+		if( motor_driveR < -12 ) motor_driveR = -12;
+		if( motor_driveL >  12 ) motor_driveL =  12;
+		if( motor_driveL < -12 ) motor_driveL = -12;
 
 		// and finally set the motor control value
 		FwMotorSetR( motor_driveR );
 		FwMotorSetL( motor_driveL );
-
-		// Run at somewhere between 20 and 50mS
-		task::sleep(FW_LOOP_SPEED);
     }
 		// Calculate velocity
 	}

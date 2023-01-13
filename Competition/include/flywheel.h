@@ -10,4 +10,4 @@ extern bool flyWheelOn;
 int FwControlTask();
 int fwTask();
 
-extern int FW_MAX_POWER;
+extern double FW_MAX_POWER;

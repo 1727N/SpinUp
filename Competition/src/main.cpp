@@ -247,7 +247,7 @@ void intakeControl(){
    Indexer.spin(fwd, intakePct, pct);
   }
   if(Controller1.ButtonB.PRESSED) {
-    //outTakeTrue = !outTakeTrue;
+    outTakeTrue = !outTakeTrue;
     Intake.stop();
     Indexer.stop();
   }
@@ -341,14 +341,14 @@ void usercontrol(void) {
     FR.spin(fwd, rightNewPct, pct);
     BR.spin(fwd, rightNewPct, pct);
 
-    intakeControl();
-    puncherControl();
-    catapultControl();
-    rollerControl();
+    //intakeControl();
+    //puncherControl();
+    //catapultControl();
+    //rollerControl();
 
     if (Controller1.ButtonL1.PRESSED){
       flyWheelOn = true;
-      FwVelocitySet( 100, 0.85 );
+      FwVelocitySet( 400, 0.85 );
       //FlyBack.spin(fwd);
     }
     if (Controller1.ButtonL2.PRESSED){
