@@ -274,11 +274,11 @@ double targetVelocity = 400;
 
 void flyWheelPID(){
   double scaledkP = 0.000001*flykP;
-  double currentRPM = (FlyFront.velocity(rpm) + FlyBack.velocity(rpm))/2;
+  double currentRPM = -(FlyFront.velocity(rpm) + FlyBack.velocity(rpm))/2;
 
   flyError = targetVelocity - currentRPM;
 
-  if (flyError > 150){
+  if (flyError > 200){
     flyPowerPID = 12;
     return;
   }
@@ -300,7 +300,7 @@ void flyWheelPID(){
 
   double iteratedPID = (flyError * scaledkP + flyIntegral * flykI + flyDerivative * flykD);
 
-  flyPowerPID += iteratedPID;
+  flyPowerPID = iteratedPID * 12/600;
 
   if (flyPowerPID < 0){
     flyPowerPID = 0;
@@ -355,10 +355,10 @@ int FwControlTask()
     }
     if (DRIVER_CONTROL){
       if (flyWheelOn){
-        flyWheelPID();
-        //flyPowerPID = 12;
-        FlyFront.spin(fwd, flyPowerPID, volt);
-        FlyBack.spin(fwd, flyPowerPID, volt);
+        //flyWheelPID();
+        flyPowerPID = 10;
+        FlyFront.spin(reverse, flyPowerPID, volt);
+        FlyBack.spin(reverse, flyPowerPID, volt);
       }
       else {
         FlyFront.stop(coast);

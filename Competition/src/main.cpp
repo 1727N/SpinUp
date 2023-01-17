@@ -11,23 +11,23 @@
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
 // Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         9               
-// BL                   motor         11              
-// BR                   motor         20              
+// FL                   motor         11              
+// FR                   motor         1               
+// BL                   motor         19              
+// BR                   motor         9               
 // Inertial             inertial      17              
 // Left                 encoder       G, H            
 // Side                 encoder       E, F            
 // FlyFront             motor         5               
 // FlyBack              motor         6               
 // Vision               vision        3               
-// Intake               motor         12              
+// Intake               motor         16              
 // Puncher              digital_out   A               
 // Catapult             digital_out   B               
 // Right                encoder       C, D            
-// Roller               motor         7               
-// Indexer              motor         4               
+// Indexer              motor         15              
 // ---- END VEXCODE CONFIGURED DEVICES ----
+//hello guys
 #include "chassis-control.h"
 #include "draw-field.h"
 #include "flywheel.h"
@@ -73,15 +73,15 @@ void turnToAngle(int targetAngle, int timeOutLength){
 
 void shoot(){
   Puncher.set(true);
-  wait(300, msec);
+  wait(1300, msec);
   Puncher.set(false);
   wait(400, msec);
 }
 
 void rollFor(int timeRoll){
-  Roller.spin(reverse, 60, pct);
+  Intake.spin(reverse, 60, pct);
   wait(timeRoll, msec);
-  Roller.stop();
+  Intake.stop();
 }
 
 /* -------------------------- AUTON PROGRAMS -------------------------- */
@@ -99,9 +99,9 @@ void rollerStart(){
 
   driveForDist(0.5, 500, 1);
 
-  Roller.spin(fwd, 60, pct);
+  Intake.spin(fwd, 60, pct);
   wait(300, msec);
-  Roller.stop();
+  Intake.stop();
 
   directDrive(-2, 1000, 0.8);
   waitUntil(runChassisControl == false);
@@ -141,9 +141,9 @@ void nonRollerStart(){
   turnToAngle(270, 2000);
   driveForDist(2, 3000, 1);
 
-  Roller.spin(fwd);
+  Intake.spin(fwd);
   wait(500, msec);
-  Roller.stop();
+  Intake.stop();
 }
 
 void soloAWP(){
@@ -154,9 +154,9 @@ void soloAWP(){
 
   driveForDist(0.5, 500, 1);
 
-  Roller.spin(fwd, 80, pct);
+  Intake.spin(fwd, 80, pct);
   wait(500, msec);
-  Roller.stop();
+  Intake.stop();
 
   directDrive(-2, 1000, 0.8);
   waitUntil(runChassisControl == false);
@@ -178,9 +178,9 @@ void soloAWP(){
   turnTo(90, 1000);
   driveForDist(3, 1, 1);
 
-  Roller.spin(fwd, 80, pct);
+  Intake.spin(fwd, 80, pct);
   wait(500, msec);
-  Roller.stop();
+  Intake.stop();
 }
 
 void autonomous(void) {
@@ -234,6 +234,8 @@ bool outTakeTrue = false;
 const int intakePct = 100;
 
 void intakeControl(){
+  Intake.setVelocity( intakePct, pct);
+  Indexer.setVelocity( intakePct, pct);
   if (Controller1.ButtonR1.pressing()){
    intakeTrue = true;
   }
@@ -262,18 +264,22 @@ void intakeControl(){
 }
 
 void puncherControl(){
-  if (flyWheelOn && FlyFront.velocity(rpm) > 300)
-  {
-    if (Controller1.ButtonUp.PRESSED){  
+  if (Controller1.ButtonUp.PRESSED){
+    Indexer.setVelocity(100, pct);
+    Intake.setVelocity(50, pct);
+    Indexer.spin(reverse);
+    Intake.spin(fwd);
+    if (flyWheelOn && -FlyFront.velocity(rpm) > 300)
+    {
       Puncher.set(true);
-      wait(200, msec);
+      wait(2000, msec);
       Puncher.set(false);
+      Indexer.stop();
+      Intake.stop();
     }
-  }
-  else {
-    if (Controller1.ButtonUp.PRESSED){  
-      flyWheelOn = true;
-    } 
+    else {  
+      flyWheelOn = true; 
+    }
   }
 }
 
@@ -285,10 +291,7 @@ void catapultControl(){
 
 void rollerControl(){
   if (Controller1.ButtonA.pressing()){
-    Roller.spin(fwd, 40, pct);
-  }
-  else {
-    Roller.stop(coast);
+    Indexer.spin(fwd, 40, pct);
   }
 }
 
