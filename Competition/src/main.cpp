@@ -11,10 +11,10 @@
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
 // Controller1          controller                    
-// FL                   motor         11              
-// FR                   motor         1               
-// BL                   motor         19              
-// BR                   motor         9               
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
 // Inertial             inertial      17              
 // Left                 encoder       G, H            
 // Side                 encoder       E, F            
@@ -266,7 +266,7 @@ void intakeControl(){
 void puncherControl(){
   if (Controller1.ButtonUp.PRESSED){
     Indexer.setVelocity(100, pct);
-    Intake.setVelocity(50, pct);
+    Intake.setVelocity(90, pct);
     Indexer.spin(reverse);
     Intake.spin(fwd);
     if (flyWheelOn && -FlyFront.velocity(rpm) > 300)
@@ -330,7 +330,7 @@ void usercontrol(void) {
     // float leftNewPct = leftPct * leftPct * leftPct * 100;
     // float rightNewPct = rightPct * rightPct * rightPct * 100;
 
-    int exp = 2;
+    int exp = 3;
 
     float leftPct = (Controller1.Axis3.position());
     float rightPct = (Controller1.Axis2.position());

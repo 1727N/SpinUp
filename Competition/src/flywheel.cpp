@@ -327,15 +327,15 @@ int FwControlTask()
 	while(1)
 	{
     loopCount++;
-    if (Controller1.ButtonX.PRESSED){
-      flykP += 1;
-    }
-    if (Controller1.ButtonA.PRESSED){
-      flykP = flykP - 1;
-    }
-    if (Controller1.ButtonX.PRESSED){
-      flykD += 0.001;
-    }
+    // if (Controller1.ButtonX.PRESSED){
+    //   flykP += 1;
+    // }
+    // if (Controller1.ButtonA.PRESSED){
+    //   flykP = flykP - 1;
+    // }
+    // if (Controller1.ButtonX.PRESSED){
+    //   flykD += 0.001;
+    // }
     if (loopCount == 10000){
       Controller1.Screen.clearScreen();
       Controller1.Screen.setCursor(1,1);
