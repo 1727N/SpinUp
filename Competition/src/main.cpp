@@ -1,3 +1,22 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      17              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         16              
+// Puncher              digital_out   A               
+// Catapult             digital_out   B               
+// Indexer              motor         15              
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -277,6 +296,7 @@ void puncherControl(){
       Puncher.set(false);
       Indexer.stop();
       Intake.stop();
+      flywheelVoltage = 10;
     }
     else {  
       flyWheelOn = true; 

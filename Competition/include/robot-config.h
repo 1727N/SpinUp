@@ -24,10 +24,11 @@ extern signature Vision__SIG_6;
 extern signature Vision__SIG_7;
 extern vision Vision;
 extern motor Intake;
-extern digital_out Puncher;
-extern digital_out Catapult;
-extern encoder Right;
+extern digital_out Double1;
+extern digital_out Endgame;
 extern motor Indexer;
+extern digital_out Double2;
+extern digital_out Pressure;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
