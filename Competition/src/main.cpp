@@ -271,6 +271,7 @@ void puncherControl(){
     Intake.spin(fwd);
     if (flyWheelOn && -FlyFront.velocity(rpm) > 300)
     {
+      flywheelVoltage = 12;
       Puncher.set(true);
       wait(2000, msec);
       Puncher.set(false);
@@ -351,12 +352,12 @@ void usercontrol(void) {
 
     if (Controller1.ButtonL1.PRESSED){
       flyWheelOn = true;
-      FwVelocitySet( 100, 0.85 );
+      //FwVelocitySet( 100, 0.85 );
       //FlyBack.spin(fwd);
     }
     if (Controller1.ButtonL2.PRESSED){
       flyWheelOn = false;
-      FwVelocitySet( 0, 0 );      
+      //FwVelocitySet( 0, 0 );      
     }
 
     //std::cout << FlyFront.velocity(rpm) << std::endl << std::endl;
