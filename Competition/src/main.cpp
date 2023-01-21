@@ -13,40 +13,13 @@
 // FlyBack              motor         6               
 // Vision               vision        3               
 // Intake               motor         16              
-// Puncher              digital_out   A               
-// Catapult             digital_out   B               
+// Double1              digital_out   C               
+// Endgame              digital_out   B               
 // Indexer              motor         15              
+// Double2              digital_out   D               
+// Pressure             digital_out   A               
 // ---- END VEXCODE CONFIGURED DEVICES ----
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       VEX                                                       */
-/*    Created:      Thu Sep 26 2019                                           */
-/*    Description:  Competition Template                                      */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
 
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      17              
-// Left                 encoder       G, H            
-// Side                 encoder       E, F            
-// FlyFront             motor         5               
-// FlyBack              motor         6               
-// Vision               vision        3               
-// Intake               motor         16              
-// Puncher              digital_out   A               
-// Catapult             digital_out   B               
-// Right                encoder       C, D            
-// Indexer              motor         15              
-// ---- END VEXCODE CONFIGURED DEVICES ----
-//hello guys
 #include "chassis-control.h"
 #include "draw-field.h"
 #include "flywheel.h"
@@ -91,9 +64,11 @@ void turnToAngle(int targetAngle, int timeOutLength){
 }
 
 void shoot(){
-  Puncher.set(true);
+  Double1.set(true);
+  Double2.set(true);
   wait(1300, msec);
-  Puncher.set(false);
+  Double1.set(false);
+  Double2.set(false);
   wait(400, msec);
 }
 
@@ -291,9 +266,13 @@ void puncherControl(){
     if (flyWheelOn && -FlyFront.velocity(rpm) > 300)
     {
       flywheelVoltage = 12;
-      Puncher.set(true);
+      Double1.set(true);
+      Double2.set(true);
+      Pressure.set(true);
       wait(2000, msec);
-      Puncher.set(false);
+      Pressure.set(false);
+      Double1.set(false);
+      Double2.set(false);
       Indexer.stop();
       Intake.stop();
       flywheelVoltage = 10;
@@ -306,7 +285,7 @@ void puncherControl(){
 
 void catapultControl(){
   if (Controller1.ButtonY.pressing() && Controller1.ButtonRight.pressing()){  
-    Catapult.set(true);
+    Endgame.set(true);
   }
 }
 
