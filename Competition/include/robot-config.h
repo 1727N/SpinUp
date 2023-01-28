@@ -27,8 +27,8 @@ extern motor Intake;
 extern digital_out Double1;
 extern digital_out Endgame;
 extern motor Indexer;
-extern digital_out Double2;
 extern digital_out Pressure;
+extern digital_out IntakePump;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

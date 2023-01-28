@@ -12,4 +12,4 @@ int fwTask();
 
 extern int FW_MAX_POWER;
 
-extern int flywheelVoltage;
+extern double flywheelVoltage;
