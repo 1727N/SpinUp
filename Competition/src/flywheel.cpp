@@ -155,8 +155,8 @@ FwCalculateSpeed()
 	encoder_counts_lastL = encoder_countsL;
 
 	// Calculate velocity in rpm
-	motor_velocityR = FlyFront.velocity(rpm);//(1000.0 / delta_msR) * delta_encR * 60.0 / ticks_per_rev;
-	motor_velocityL = FlyBack.velocity(rpm);//(1000.0 / delta_msL) * delta_encL * 60.0 / ticks_per_rev;
+	motor_velocityR = (1000.0 / delta_msR) * delta_encR * 60.0 / ticks_per_rev;
+	motor_velocityL = (1000.0 / delta_msL) * delta_encL * 60.0 / ticks_per_rev;
 }
 
 /*Update the velocity tbh controller variables RIGHT*/
@@ -271,10 +271,9 @@ double flykD = 0;
 
 double flyPowerPID = 0;
 
-double targetVelocity = 400;
+double targetVelocity = 450;
 
 void flyWheelPID(){
-  double scaledkP = 0.000001*flykP;
   double currentRPM = -(FlyFront.velocity(rpm) + FlyBack.velocity(rpm))/2;
 
   flyError = targetVelocity - currentRPM;
@@ -299,7 +298,7 @@ void flyWheelPID(){
 
   flyPrevError = flyError;
 
-  double iteratedPID = (flyError * scaledkP + flyIntegral * flykI + flyDerivative * flykD);
+  double iteratedPID = (flyError * flykP + flyIntegral * flykI + flyDerivative * flykD);
 
   flyPowerPID = iteratedPID * 12/600;
 
@@ -356,10 +355,13 @@ int FwControlTask()
     }
     if (DRIVER_CONTROL){
       if (flyWheelOn){
-        //flyWheelPID();
+        flyWheelPID();
         flyPowerPID = flywheelVoltage;
         FlyFront.spin(reverse, flyPowerPID, volt);
         FlyBack.spin(reverse, flyPowerPID, volt);
+        
+        //FlyFront.spin(reverse, 400, rpm);
+        //FlyBack.spin(reverse, 400, rpm);
       }
       else {
         FlyFront.stop(coast);
@@ -367,6 +369,11 @@ int FwControlTask()
       }
     }
     else {
+      // flyWheelPID();
+      // flyPowerPID = flywheelVoltage;
+      // FlyFront.spin(reverse, flyPowerPID, volt);
+      // FlyBack.spin(reverse, flyPowerPID, volt);
+
     FwCalculateSpeed();
 
 		// Do the velocity TBH calculations
@@ -384,11 +391,9 @@ int FwControlTask()
 		if( motor_driveL < -100 ) motor_driveL = -100;
 
 		// and finally set the motor control value
-		FwMotorSetR( motor_driveR );
-		FwMotorSetL( motor_driveL );
+		// FwMotorSetR( motor_driveR );
+		// FwMotorSetL( motor_driveL );
 
-		// Run at somewhere between 20 and 50mS
-		task::sleep(FW_LOOP_SPEED);
     }
 		// Calculate velocity
 	}

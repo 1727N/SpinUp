@@ -6,6 +6,68 @@
 // FR                   motor         10              
 // BL                   motor         11              
 // BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         16              
+// Double1              digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// IntakePump           digital_out   D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         16              
+// Double1              digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         16              
+// Double1              digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Double2              digital_out   D               
+// Pressure             digital_out   A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
 // Inertial             inertial      17              
 // Left                 encoder       G, H            
 // Side                 encoder       E, F            
@@ -52,6 +114,8 @@ void pre_auton(void) {
 
   //roller: 0, nonroller: 270, AWP = 0
   Inertial.setHeading(0, degrees);
+
+  wait(800, msec);
 }
 
 void driveForDist(double xDist, int timeOutLength, double maxSpeed){
@@ -62,13 +126,6 @@ void driveForDist(double xDist, int timeOutLength, double maxSpeed){
 void turnToAngle(int targetAngle, int timeOutLength){
   turnTo(targetAngle, timeOutLength);
   waitUntil(runChassisControl == false);
-}
-
-void shoot(){
-  Double1.set(true);
-  wait(1300, msec);
-  Double1.set(false);
-  wait(400, msec);
 }
 
 void rollFor(int timeRoll){
@@ -148,41 +205,73 @@ void nonRollerStart(){
   Intake.stop();
 }
 
+void shoot(){
+  //if (FlyFront.velocity(rpm) < -440 && FlyFront.velocity(rpm) > -460){
+  Indexer.setVelocity(100, pct);
+  Intake.setVelocity(90, pct);
+  Indexer.spin(reverse);
+  Intake.spin(fwd);
+  Double1.set(true);
+  Pressure.set(true);
+  wait(600, msec);
+  Pressure.set(false);
+  Double1.set(false);
+  Indexer.stop();
+  Intake.stop();
+  //}
+}
+
 void soloAWP(){
   THETA_START = 0;
 
-  FW_MAX_POWER = 80;
-  FwVelocitySet( 70, 1 );
+  driveForDist(-4.5, 800, 1);
 
-  driveForDist(0.5, 500, 1);
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
 
-  Intake.spin(fwd, 80, pct);
-  wait(500, msec);
+  driveForDist(8, 1300, 1);
+
+  turnToAngle(320, 1000);
+
+  // FW_MAX_POWER = 80;
+  // FwVelocitySet( 70, 1 );
+  FlyFront.spin(reverse, 450, rpm);
+  FlyBack.spin(reverse, 450, rpm);
+
+  driveForDist(63, 4300, 1);
+
+  turnToAngle(45, 1000);
+  shoot();
+
+  Intake.spin(fwd, 100, pct);
+  Indexer.spin(fwd, 100, pct);
+  wait(800, msec);
+
   Intake.stop();
-
-  directDrive(-2, 1000, 0.8);
-  waitUntil(runChassisControl == false);
-
-  turnTo(10, 2000);
-  waitUntil(runChassisControl == false);
-
-  wait(200, msec);
+  Indexer.stop();
 
   shoot();
-  shoot();
 
-  FwVelocitySet( 0, 0.00 );
+  turnToAngle(128, 1000);
 
-  turnTo(133, 2000);
-  waitUntil(runChassisControl == false);
-  driveForDist(65, 4000, 1);
+  driveForDist(-62, 4300, 1);
 
-  turnTo(90, 1000);
-  driveForDist(3, 1, 1);
+  turnToAngle(90, 1000);
 
-  Intake.spin(fwd, 80, pct);
-  wait(500, msec);
-  Intake.stop();
+  driveForDist(-8, 1300, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(600, msec);
+  Indexer.stop();
+}
+
+void tuning(){
+  soloAWP();
+  //driveForDist(10, 5000, 1);
+  //driveForDist(-10, 5000, 1);
+  //turnTo(90, 4000);
+
 }
 
 void autonomous(void) {
@@ -211,7 +300,8 @@ void autonomous(void) {
 
   waitUntil(!Inertial.isCalibrating());
 
-  autonSkills();
+  //autonSkills();
+  tuning();
   //soloAWP();
   //rollerStart();
   //nonRollerStart();
@@ -391,7 +481,7 @@ void usercontrol(void) {
 
     if (Controller1.ButtonL1.PRESSED){
       flyWheelOn = true;
-      //FwVelocitySet( 100, 0.85 );
+      FwVelocitySet( 100, 0.85 );
       //FlyBack.spin(fwd);
     }
     if (Controller1.ButtonL2.PRESSED){

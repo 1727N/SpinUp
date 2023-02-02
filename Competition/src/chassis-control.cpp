@@ -130,9 +130,9 @@ double driveIntegralBound = 1.5;
 
 double driveDerivative = 0;
 
-double drivekP = 1.3;
+double drivekP = 1;
 double drivekI = 0.1;
-double drivekD = 0;
+double drivekD = 0.6;
 
 double drivePowerPID = 0;
 
@@ -191,8 +191,8 @@ double turnDerivative = 0;
 // double turnkD = 0;
 
 double turnkP = 26;
-double turnkI = 3;
-double turnkD = 10;
+double turnkI = 1.5;
+double turnkD = 30;
 
 double turnPowerPID = 0;
 
