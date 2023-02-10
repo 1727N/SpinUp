@@ -8,7 +8,7 @@ bool DRIVER_CONTROL;
 
 // Maximum power we want to send to the flywheel motors
 int FW_MAX_POWER    =        100;
-double flywheelVoltage = 7;
+double flywheelVoltage = 8;
 
 // encoder counts per revolution depending on motor
 #define MOTOR_TPR_TURBO         261.333

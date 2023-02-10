@@ -15,18 +15,17 @@ motor BL = motor(PORT11, ratio18_1, true);
 motor BR = motor(PORT20, ratio18_1, false);
 inertial Inertial = inertial(PORT18);
 encoder Left = encoder(Brain.ThreeWirePort.G);
-encoder Side = encoder(Brain.ThreeWirePort.E);
 motor FlyFront = motor(PORT5, ratio6_1, true);
 motor FlyBack = motor(PORT6, ratio6_1, false);
 /*vex-vision-config:begin*/
 vision Vision = vision (PORT3, 50);
 /*vex-vision-config:end*/
-motor Intake = motor(PORT16, ratio18_1, true);
+motor Intake = motor(PORT16, ratio18_1, false);
 digital_out Double1 = digital_out(Brain.ThreeWirePort.C);
 digital_out Endgame = digital_out(Brain.ThreeWirePort.B);
 motor Indexer = motor(PORT15, ratio18_1, false);
 digital_out Pressure = digital_out(Brain.ThreeWirePort.A);
-digital_out IntakePump = digital_out(Brain.ThreeWirePort.D);
+rotation Side = rotation(PORT2, false);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

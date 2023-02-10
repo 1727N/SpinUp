@@ -5,6 +5,8 @@ extern double xTargetLocation;
 extern double yTargetLocation;
 extern double targetFacingAngle;
 
+extern bool driverControl;
+
 extern bool runChassisControl;
 
 extern void driveTo(double xTarget, double yTarget, double targetAngle, double timeOutLength, double maxSpeed);

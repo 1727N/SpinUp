@@ -6,6 +6,8 @@ double xTargetLocation = xPosGlobal;
 double yTargetLocation = yPosGlobal;
 double targetFacingAngle = 0;
 
+bool driverControl;
+
 int driveTimer;
 
 //distances
@@ -353,18 +355,16 @@ int chassisControl() {
       std::cout << "Turn Error: " << (turnError * toDegrees) << std::endl;
       std::cout << "Drive Power: " << drivePowerPID << std::endl;
       std::cout << "Turn Power: " << turnPowerPID << std::endl << std::endl;
-      // std::cout << "FL: " << drivePowerFLBR << std::endl;
-      // std::cout << "FR: " << drivePowerFRBL << std::endl;
-      // std::cout << "FL Power: " << FrontLeftPower << std::endl;
-      // std::cout << "FR Power: " << FrontRightPower << std::endl;
-      // std::cout << "BL Power: " << BackLeftPower << std::endl;
-      // std::cout << "BR Power: " << BackRightPower << std::endl << std::endl;
     }
     else {
-      FR.setBrake(coast);
-      FL.setBrake(coast);
-      BR.setBrake(coast);
-      BL.setBrake(coast);
+      FR.setBrake(hold);
+      FL.setBrake(hold);
+      BR.setBrake(hold);
+      BL.setBrake(hold);
+      //FR.stop();
+      //FL.stop();
+      //BR.stop();
+      //BL.stop();
     }
     task::sleep(20);
   }

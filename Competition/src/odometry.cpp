@@ -19,9 +19,9 @@ double X_START = 70;
 double Y_START = 70;
 
 //Distances of tracking wheels from tracking center (INCHES)
-double LTrackRadius = 4.625;
+double LTrackRadius = 0;
 double RTrackRadius = 4.5; 
-double STrackRadius = 2.125;
+double STrackRadius = 3.75;
 
 //Calculated Values (every loop)
 //Angles (DEGREES)
