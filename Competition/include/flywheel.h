@@ -11,6 +11,8 @@ extern double flykP;
 extern double flykI;
 extern double flykD;
 
+extern float gain;
+
 int FwControlTask();
 int fwTask();
 

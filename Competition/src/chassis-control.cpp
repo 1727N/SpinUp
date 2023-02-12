@@ -15,6 +15,9 @@ double hypotenuseAngle = 0;
 
 double robotRelativeAngle = 0;
 
+double drivePowerFLBR = 0;
+double drivePowerFRBL = 0;
+
 bool runChassisControl = false;
 
 bool onlyTurn = false;
@@ -96,6 +99,21 @@ void turnToPoint(double xCoordToFace, double yCoordToFace, double timeOutLength 
   Brain.resetTimer();
 
   maxAllowedSpeed = maxSpeed;
+}
+
+void setDrivePower(double theta) {
+  if (theta > M_PI_2 && theta < M_PI_2*3){
+    drivePowerFLBR = -1;
+    drivePowerFRBL = -1;
+  }
+  else if (theta < -M_PI_2 && theta > -M_PI_2*3){
+    drivePowerFLBR = -1;
+    drivePowerFRBL = -1;
+  }
+  else {
+    drivePowerFLBR = 1;
+    drivePowerFRBL = 1;
+  }
 }
 
 /*---------------------------------------------------------- DRIVE PID ----------------------------------------------------------*/
@@ -208,8 +226,8 @@ void turnPID() {
 
   //Limit power output to 12V
   if (!onlyTurn){
-    if(turnPowerPID > 2) {
-      turnPowerPID = 2;
+    if(turnPowerPID > 12) {
+      turnPowerPID = 12;
     }
   }
   else {
@@ -258,7 +276,7 @@ int chassisControl() {
         }
 
         //The angle the robot needs to travel relative to its forward direction in order to go toward the target
-        robotRelativeAngle = hypotenuseAngle - currentAbsoluteOrientation + M_PI_2;
+        robotRelativeAngle = hypotenuseAngle - currentAbsoluteOrientation;
 
         if(robotRelativeAngle > 2 * M_PI) {
           robotRelativeAngle -= 2 * M_PI;
@@ -268,15 +286,17 @@ int chassisControl() {
         }
       }
 
+      setDrivePower(robotRelativeAngle);
+
       //get PID values for driving and turning
       drivePID();
       turnPID();
 
       //set power
-      FrontLeftPower = (turnPowerPID + drivePowerPID) * maxAllowedSpeed;
-      FrontRightPower = (drivePowerPID - turnPowerPID) * maxAllowedSpeed;
-      BackLeftPower = (drivePowerPID + turnPowerPID) * maxAllowedSpeed;
-      BackRightPower = (drivePowerPID - turnPowerPID) * maxAllowedSpeed;
+      FrontLeftPower = (turnPowerPID + (drivePowerFLBR * drivePowerPID)) * maxAllowedSpeed;
+      FrontRightPower = ((drivePowerFRBL * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
+      BackLeftPower = ((drivePowerFRBL * drivePowerPID) + turnPowerPID) * maxAllowedSpeed;
+      BackRightPower = ((drivePowerFLBR * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
       
       FL.spin(directionType::fwd, FrontLeftPower, voltageUnits::volt);
       FR.spin(directionType::fwd, FrontRightPower, voltageUnits::volt);
@@ -297,7 +317,7 @@ int chassisControl() {
       }
 
       else {
-        if (fabs(driveError) < 0.1 && fabs(turnError) < 0.005){
+        if (fabs(driveError) < driveMaxError){
           restTime++;
         }
         else {
@@ -325,6 +345,10 @@ int chassisControl() {
       FL.setBrake(brake);
       BR.setBrake(brake);
       BL.setBrake(brake);
+      FR.stop();
+      FL.stop();
+      BR.stop();
+      BL.stop();
     }
     task::sleep(20);
   }

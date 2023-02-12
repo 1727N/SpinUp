@@ -1,45 +1,3 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// FlyFront             motor         5               
-// FlyBack              motor         6               
-// Intake               motor         16              
-// IndexPiston          digital_out   C               
-// Endgame              digital_out   B               
-// Indexer              motor         15              
-// Pressure             digital_out   A               
-// Side                 rotation      2               
-// Controller2          controller                    
-// Flywheel             rotation      3               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// FlyFront             motor         5               
-// FlyBack              motor         6               
-// Intake               motor         16              
-// Index                digital_out   C               
-// Endgame              digital_out   B               
-// Indexer              motor         15              
-// Pressure             digital_out   A               
-// Side                 rotation      2               
-// Controller2          controller                    
-// Flywheel             rotation      3               
-// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -64,7 +22,7 @@
 // FlyBack              motor         6               
 // Vision               vision        3               
 // Intake               motor         16              
-// Double1              digital_out   C               
+// IndexerPiston              digital_out   C               
 // Endgame              digital_out   B               
 // Indexer              motor         15              
 // Pressure             digital_out   A               
@@ -267,16 +225,18 @@ void soloAWP(){
 }
 
 void tuning(){
-  FwVelocitySet(2000, 0.67);
+  FwVelocitySet(2500, 0.85);
   // Intake.spin(fwd, 100, pct);
   // Indexer.spin(fwd, 100, pct);
   // driveForDist(46, 3000, 0.6);
   // turnToAngle(270, 1300);
 
-  waitUntil(-Flywheel.velocity(rpm) > 1990  && -Flywheel.velocity(rpm) < 2010);
+  waitUntil(-Flywheel.velocity(rpm) > 2490  && -Flywheel.velocity(rpm) < 2510);
   shoot();
-  waitUntil(-Flywheel.velocity(rpm) > 1990  && -Flywheel.velocity(rpm) < 2010);
+  waitUntil(-Flywheel.velocity(rpm) > 2490  && -Flywheel.velocity(rpm) < 2510);
   shoot();
+
+  // moveToPoint(60, 70, 3000, 0.5);
 }
 
 /*---------------------------------------------------------- AUTONOMOUS CONTROL ----------------------------------------------------------*/
@@ -444,6 +404,21 @@ void tuneFlywheel(){
   }
 }
 
+void tuneTBH(){
+  if (Controller1.ButtonX.PRESSED){
+    gain += 0.00001;
+  }
+  if (Controller1.ButtonA.PRESSED){
+    gain -= 0.00001;
+  }
+
+  if (Brain.Timer.value() < 10){
+    std::cout << Brain.Timer.value() << "," << -Flywheel.velocity(rpm) << std::endl; 
+  }
+
+  //std::cout << gain << std::endl << std::endl;
+}
+
 void tankDrive(){
   float maxSpeed = 100;
 
@@ -483,9 +458,9 @@ void usercontrol(void) {
   BL.setBrake(brakeType::coast);
   BR.setBrake(brakeType::coast);
   
-  task odometryTask(positionTracking);
-  task drawFieldTask(drawField);
-  task chassisControlTask(chassisControl);
+  //task odometryTask(positionTracking);
+  //task drawFieldTask(drawField);
+  //task chassisControlTask(chassisControl);
   task flywheelTask(FwControlTask);
 
   FlyFront.setBrake(coast);
@@ -494,14 +469,14 @@ void usercontrol(void) {
   Brain.Screen.clearScreen();
 
   while (1) {
-    tankDrive();
-    //arcadeDrive();
+    //tankDrive();
+    arcadeDrive();
 
-    if (Controller1.ButtonLeft.PRESSED){
-      // turnToPoint(30, 30, 1300, 1);
-      // waitUntil(runChassisControl == false);
-      //moveToPoint(70, 70, 3000, 0.7);
-    }
+    // if (Controller1.ButtonLeft.PRESSED){
+    //   turnToPoint(30, 30, 1300, 1);
+    //   waitUntil(runChassisControl == false);
+    //   moveToPoint(70, 70, 3000, 0.7);
+    // }
     // if (Controller1.ButtonLeft.PRESSED){
     //   turnToAngle(0, 3500);
     //   //turnToAngle(90, 5000);
@@ -527,7 +502,7 @@ int main() {
 
   pre_auton();
 
-  std::cout << "----------------------------------------------------------------------------------------------------------------" << std::endl << std::endl;
+  // std::cout << "----------------------------------------------------------------------------------------------------------------" << std::endl << std::endl;
 
   while(Inertial.isCalibrating()) {
     task::sleep(100);

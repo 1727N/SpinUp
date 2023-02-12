@@ -161,7 +161,7 @@ int loopCount;
 
 int FwControlTask()
 {
-	gain = 0.00015;
+	gain = 0.00005;
 
 	while(1)
 	{
@@ -227,9 +227,9 @@ int FwControlTask()
 		// and finally set the motor control value  
 		FwMotorSet( motor_drive );
 
-    std::cout << Flywheel.velocity(rpm) << std::endl;
-    std::cout << current_error << std::endl;
-    std::cout << motor_drive << std::endl << std::endl;
+    // std::cout << Flywheel.velocity(rpm) << std::endl;
+    // std::cout << current_error << std::endl;
+    // std::cout << motor_drive << std::endl << std::endl;
     //}
     task::sleep(10);
 	}
