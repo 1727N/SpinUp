@@ -1,29 +1,27 @@
 #include "odometry.h"
 #include <iostream>
 
-#define rollerStart 0
+#define rollerStart M_PI
 #define nonRollerStart M_PI_2
-#define AWPStart 0
+#define AWPStart M_PI
 
-//CONSTANTS / Hard-Coded Values
+//CONSTANTS
 //Radius of tracking wheels in inches
 double WHEEL_RADIUS = 2.75;
 
 //Starting angle (relative to field) (RADIANS)
-double THETA_START = nonRollerStart;
+double THETA_START = rollerStart;
 
 //The starting x and y coordinates of the bot (INCHES)
-  //These distances are relative to some point (0,0) on the field
-  //Relative to: BOTTOM LEFT CORNER
+//Relative to: BOTTOM LEFT CORNER
 double X_START = 70;
 double Y_START = 70;
 
 //Distances of tracking wheels from tracking center (INCHES)
 double LTrackRadius = 0;
-double RTrackRadius = 4.5; 
+double RTrackRadius = 0; 
 double STrackRadius = 3.75;
 
-//Calculated Values (every loop)
 //Angles (DEGREES)
 double LPos = 0;
 double RPos = 0;
@@ -38,7 +36,7 @@ double deltaDistL = 0;
 double deltaDistR = 0;
 double deltaDistS = 0;
 
-//Distance summations (since last reset)
+//Distance summations
 double totalDeltaDistL = 0;
 double totalDeltaDistR = 0;
 
@@ -50,21 +48,19 @@ double previousTheta = THETA_START;
 //The change in Theta each loop (RADIANS)
 double deltaTheta = 0;
 
-//The Average angle Theta (In RADIANS) throughout the arc
+//The average angle Theta (RAD) throughout the arc
   //currentAbsoluteOrientation + (deltaTheta / 2)
 double avgThetaForArc = currentAbsoluteOrientation + (deltaTheta / 2);
 
 //The changes in the X and Y positions (INCHES)
-/*These are calculated on a local basis each loop,
-then converted to global position changes */
 double deltaXLocal = 0;
 double deltaYLocal = 0;
 
-//The X and Y offsets converted from their local forms (INCHES)
+//Local change in x and y coords added to global (INCHES)
 double deltaXGlobal = 0;
 double deltaYGlobal = 0;
 
-//The global position of the bot (INCHES)
+//The global position (INCHES)
 double xPosGlobal = X_START;
 double yPosGlobal = Y_START;
 
@@ -80,18 +76,15 @@ int positionTracking() {
     //RPos = -Right.position(rotationUnits::deg);
     SPos = Side.position(rotationUnits::deg);
 
-    //Calculate distance traveled by tracking each wheel (INCHES)
-    //Converts degrees to radians
+    //TRACKING
     deltaDistL = ((LPos - LPrevPos) * M_PI / 180) * WHEEL_RADIUS;
     deltaDistR = ((RPos - RPrevPos) * M_PI / 180) * WHEEL_RADIUS;
     deltaDistS = ((SPos - SPrevPos) * M_PI / 180) * WHEEL_RADIUS;
 
-    //Update previous values (DEGREES)
     LPrevPos = LPos;
     RPrevPos = RPos;
     SPrevPos = SPos;
 
-    //Total change in each of the L and R encoders since last reset (INCHES)
     totalDeltaDistL += deltaDistL;
     totalDeltaDistR += deltaDistR;
 
@@ -99,16 +92,13 @@ int positionTracking() {
     //currentAbsoluteOrientation = THETA_START - ( (totalDeltaDistL - totalDeltaDistR) / (LTrackRadius + RTrackRadius) );
     currentAbsoluteOrientation = (360 - Inertial.heading(rotationUnits::deg)) * M_PI / 180.0;
 
-    //Calculate the change in the angle of the bot (RADIANS)
     deltaTheta = currentAbsoluteOrientation - previousTheta;
 
-    //Update the previous Theta value (RADIANS)  
     previousTheta = currentAbsoluteOrientation;
 
-    //If no turn, then translation
+    //If turn, else translate
     if(deltaTheta == 0) {
       deltaXLocal = deltaDistS;
-      // could be either L or R; if deltaTheta == 0, left = right
       deltaYLocal = deltaDistL;
     }
     //Else, calculate the new local position
@@ -134,10 +124,8 @@ int positionTracking() {
       currentAbsoluteOrientation += 2 * M_PI;
     }
 
-    //Update global positions
     xPosGlobal += deltaXGlobal;
     yPosGlobal += deltaYGlobal;
-
 
     if (Controller1.ButtonB.PRESSED){
       std::cout << "x: " << xPosGlobal << std::endl;

@@ -1,16 +1,12 @@
 #include "chassis-control.h"
 #include <iostream>
 
-//target coords
 double xTargetLocation = xPosGlobal;
 double yTargetLocation = yPosGlobal;
 double targetFacingAngle = 0;
 
-bool driverControl;
-
 int driveTimer;
 
-//distances
 double xDistToTarget = 0;
 double yDistToTarget = 0;
 
@@ -18,11 +14,6 @@ double yDistToTarget = 0;
 double hypotenuseAngle = 0;
 
 double robotRelativeAngle = 0;
-
-//front left + back right drive power
-double drivePowerFLBR = 0;
-//front right + back left drive power
-double drivePowerFRBL = 0;
 
 bool runChassisControl = false;
 
@@ -36,11 +27,13 @@ double maxAllowedSpeed = 1.0;
 #define toRadians M_PI/180
 #define toDegrees 180/M_PI
 
+/*---------------------------------------------------------- CONTROL METHODS ----------------------------------------------------------*/
+
 //Sets the target position and indicates a specific target heading
 void driveTo(double xTarget, double yTarget, double targetAngle, double timeOutLength = 2500, double maxSpeed = 1.0) {
   xTargetLocation = xTarget;
   yTargetLocation = yTarget;
-  targetFacingAngle = targetAngle * toRadians;
+  targetFacingAngle = currentAbsoluteOrientation;
 
   runChassisControl = true;
   onlyTurn = false;
@@ -70,7 +63,6 @@ void directDrive(double xDist, double timeOutLength, double maxSpeed = 1.0){
 }
 
 // turns toward a specific heading
-
 void turnTo(double targetAngle, double timeOutLength = 2500) {
   targetFacingAngle = targetAngle * toRadians;
 
@@ -106,21 +98,7 @@ void turnToPoint(double xCoordToFace, double yCoordToFace, double timeOutLength 
   maxAllowedSpeed = maxSpeed;
 }
 
-/* 
-  Sets the drive power for each set of opposing corners. 
-  input: The angle of the target relative to the robot's "forward"
-  result: Sets each value to a decimal from 0.0 to 1.0 representing 0% to 100% motor power
-*/
-void setDrivePower(double theta) {
-  if (onlyTurn){
-    drivePowerFLBR = 0;
-    drivePowerFRBL = 0;
-  }
-  else {
-    drivePowerFLBR = 1;
-    drivePowerFRBL = 1;
-  }
-}
+/*---------------------------------------------------------- DRIVE PID ----------------------------------------------------------*/
 
 double driveError = 0;
 double drivePrevError = 0;
@@ -132,9 +110,9 @@ double driveIntegralBound = 1.5;
 
 double driveDerivative = 0;
 
-double drivekP = 1;
+double drivekP = 2.5;
 double drivekI = 0.1;
-double drivekD = 0.6;
+double drivekD = 3;
 
 double drivePowerPID = 0;
 
@@ -178,6 +156,8 @@ void drivePID() {
   }
 }
 
+/*---------------------------------------------------------- TURN PID ----------------------------------------------------------*/
+
 double turnError = 0;
 double turnPrevError = 0;
 
@@ -188,13 +168,13 @@ double turnIntegralBound = 0.09;
 
 double turnDerivative = 0;
 
-// double turnkP = 26;
+// double turnkP = 57; 47
 // double turnkI = 0;
-// double turnkD = 0;
+// double turnkD = 180; 160
 
-double turnkP = 26;
-double turnkI = 1.5;
-double turnkD = 30;
+double turnkP = 56.5;
+double turnkI = 4.5;
+double turnkD = 180;
 
 double turnPowerPID = 0;
 
@@ -238,12 +218,12 @@ void turnPID() {
     }
   }
 
-  if (turnPowerPID < 1 && turnPowerPID > 0){
-    turnPowerPID = 1;
-  }
-  else if (turnPowerPID > -1 && turnPowerPID < 0){
-    turnPowerPID  = -1;
-  }
+  // if (turnPowerPID < 1 && turnPowerPID > 0){
+  //   turnPowerPID = 1;
+  // }
+  // else if (turnPowerPID > -1 && turnPowerPID < 0){
+  //   turnPowerPID  = -1;
+  // }
 
   if(fabs(turnError) < turnMaxError) {
     turnPowerPID = 0;
@@ -251,32 +231,21 @@ void turnPID() {
 
 }
 
-/*
-NOTES
-
-Bottom left corner of field is (0,0)
-
-Angles are like a unit circle, so the positive X direction is 0 and positive Y direction is pi/2
-
-*/
-
 double FrontLeftPower = 0;
 double FrontRightPower = 0;
 double BackLeftPower = 0;
 double BackRightPower = 0;
 
-/* CHASSIS CONTROL TASK */
+/*---------------------------------------------------------- CHASSIS CONTROL TASK ----------------------------------------------------------*/
 
 int restTime;
-int maxRestTime = 10;
+int maxRestTime = 5;
 
 int chassisControl() {
   while(1) {
-    driveTimer++;
     if(runChassisControl) {
       if (directDriveOn){
         currentPoint = -Left.position(rev) * 2.75 * M_PI;
-
       }
       else {
         xDistToTarget = xTargetLocation - xPosGlobal;
@@ -285,7 +254,7 @@ int chassisControl() {
         hypotenuseAngle = atan2(yDistToTarget, xDistToTarget);
 
         if(hypotenuseAngle < 0) {
-         hypotenuseAngle += 2 * M_PI;
+          hypotenuseAngle += 2 * M_PI;
         }
 
         //The angle the robot needs to travel relative to its forward direction in order to go toward the target
@@ -299,20 +268,15 @@ int chassisControl() {
         }
       }
 
-      //Get the power percentage values for each set of motors
-      setDrivePower(robotRelativeAngle);
-
       //get PID values for driving and turning
       drivePID();
       turnPID();
 
       //set power
-
-      //TODO: CHANGE DRIVEPOWERFLBR, etc. TO 1 to test effects. May have to change moving to a point into a two step process.
-      FrontLeftPower = (turnPowerPID + (drivePowerFLBR * drivePowerPID)) * maxAllowedSpeed;
-      FrontRightPower = ((drivePowerFRBL * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
-      BackLeftPower = ((drivePowerFRBL * drivePowerPID) + turnPowerPID) * maxAllowedSpeed;
-      BackRightPower = ((drivePowerFLBR * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
+      FrontLeftPower = (turnPowerPID + drivePowerPID) * maxAllowedSpeed;
+      FrontRightPower = (drivePowerPID - turnPowerPID) * maxAllowedSpeed;
+      BackLeftPower = (drivePowerPID + turnPowerPID) * maxAllowedSpeed;
+      BackRightPower = (drivePowerPID - turnPowerPID) * maxAllowedSpeed;
       
       FL.spin(directionType::fwd, FrontLeftPower, voltageUnits::volt);
       FR.spin(directionType::fwd, FrontRightPower, voltageUnits::volt);
@@ -320,7 +284,7 @@ int chassisControl() {
       BR.spin(directionType::fwd, BackRightPower, voltageUnits::volt);
       
       if (onlyTurn){
-        if (fabs(turnError) < 0.005){
+        if (fabs(turnError) < turnMaxError){
           restTime++;
         }
         else {
@@ -357,14 +321,10 @@ int chassisControl() {
       std::cout << "Turn Power: " << turnPowerPID << std::endl << std::endl;
     }
     else {
-      FR.setBrake(hold);
-      FL.setBrake(hold);
-      BR.setBrake(hold);
-      BL.setBrake(hold);
-      //FR.stop();
-      //FL.stop();
-      //BR.stop();
-      //BL.stop();
+      FR.setBrake(brake);
+      FL.setBrake(brake);
+      BR.setBrake(brake);
+      BL.setBrake(brake);
     }
     task::sleep(20);
   }

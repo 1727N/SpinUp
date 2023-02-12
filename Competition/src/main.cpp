@@ -10,13 +10,14 @@
 // Left                 encoder       G, H            
 // FlyFront             motor         5               
 // FlyBack              motor         6               
-// Vision               vision        3               
 // Intake               motor         16              
-// Double1              digital_out   C               
+// IndexPiston          digital_out   C               
 // Endgame              digital_out   B               
 // Indexer              motor         15              
 // Pressure             digital_out   A               
 // Side                 rotation      2               
+// Controller2          controller                    
+// Flywheel             rotation      3               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
@@ -30,35 +31,24 @@
 // Left                 encoder       G, H            
 // FlyFront             motor         5               
 // FlyBack              motor         6               
-// Vision               vision        3               
 // Intake               motor         16              
-// Double1              digital_out   C               
+// Index                digital_out   C               
 // Endgame              digital_out   B               
 // Indexer              motor         15              
 // Pressure             digital_out   A               
-// IntakePump           digital_out   D               
 // Side                 rotation      2               
+// Controller2          controller                    
+// Flywheel             rotation      3               
 // ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// FlyFront             motor         5               
-// FlyBack              motor         6               
-// Vision               vision        3               
-// Intake               motor         16              
-// Double1              digital_out   C               
-// Endgame              digital_out   B               
-// Indexer              motor         15              
-// Pressure             digital_out   A               
-// IntakePump           digital_out   D               
-// ---- END VEXCODE CONFIGURED DEVICES ----
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       LUX                                                       */
+/*    Created:      Thu Sep 26 2019                                           */
+/*    Description:  Competition Program                                       */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
@@ -88,17 +78,11 @@
 
 using namespace vex;
 
-// A global instance of competition
 competition Competition;
-
-// define your global instances of motors and other devices here
-
-motor_group Flywheel{FlyFront, FlyBack};
 
 task odometryTask;
 task drawFieldTask;
 task chassisControlTask;
-task intakeTask;
 task flywheelTask;
 
 void pre_auton(void) {
@@ -110,13 +94,13 @@ void pre_auton(void) {
     task::sleep(100);
   }
 
-  //roller: 0, nonroller: 270, AWP = 0
-  Inertial.setHeading(0, degrees);
+  //roller: 180, nonroller: 270, AWP = 180
+  Inertial.setHeading(180, degrees);
 
   wait(800, msec);
-
-  driverControl = false;
 }
+
+/*---------------------------------------------------------- HELPER METHODS ----------------------------------------------------------*/
 
 void driveForDist(double xDist, int timeOutLength, double maxSpeed){
   directDrive(xDist, timeOutLength, maxSpeed);
@@ -128,15 +112,37 @@ void turnToAngle(int targetAngle, int timeOutLength){
   waitUntil(runChassisControl == false);
 }
 
+void moveToPoint(double xPos, double yPos, int timeOutLength, double maxSpeed){
+  turnToPoint(xPos, yPos, 1500, 1);
+  waitUntil(runChassisControl == false);
+  driveTo(xPos, yPos, 1, timeOutLength, maxSpeed);
+  waitUntil(runChassisControl == false);
+}
+
 void rollFor(int timeRoll){
   Intake.spin(reverse, 60, pct);
   wait(timeRoll, msec);
   Intake.stop();
 }
 
-/* -------------------------- AUTON PROGRAMS -------------------------- */
+void shoot(){
+  Indexer.setVelocity(100, pct);
+  Intake.setVelocity(90, pct);
+  Indexer.spin(reverse);
+  Intake.spin(fwd);
+  IndexPiston.set(true);
+  Pressure.set(true);
+  wait(400, msec);
+  Pressure.set(false);
+  IndexPiston.set(false);
+  Indexer.stop();
+  Intake.stop();
+  wait(500, msec);
+}
 
-//SKILLS
+/*---------------------------------------------------------- AUTONOMOUS PROGRAMS ----------------------------------------------------------*/
+
+// SKILLS
 void autonSkills() {
   FL.spinFor(reverse, 180, degrees, false);
   FR.spinFor(reverse, 180, degrees, false);
@@ -170,21 +176,6 @@ void autonSkills() {
 
   turnToAngle(315, 4000);
 }
-void shoot(){
-  //if (FlyFront.velocity(rpm) < -440 && FlyFront.velocity(rpm) > -460){
-  Indexer.setVelocity(100, pct);
-  Intake.setVelocity(90, pct);
-  Indexer.spin(reverse);
-  Intake.spin(fwd);
-  Double1.set(true);
-  Pressure.set(true);
-  wait(600, msec);
-  Pressure.set(false);
-  Double1.set(false);
-  Indexer.stop();
-  Intake.stop();
-  //}
-}
 
 void rollerStart(){
   THETA_START = 0;
@@ -199,8 +190,6 @@ void rollerStart(){
 
   turnToAngle(317, 1000);
 
-  // FW_MAX_POWER = 80;
-  // FwVelocitySet( 70, 1 );
   FlyFront.spin(reverse, 450, rpm);
   FlyBack.spin(reverse, 450, rpm);
 
@@ -234,8 +223,6 @@ void nonRollerStart(){
   Intake.stop();
 }
 
-
-
 void soloAWP(){
   THETA_START = 0;
 
@@ -249,8 +236,6 @@ void soloAWP(){
 
   turnToAngle(315, 1000);
 
-  // FW_MAX_POWER = 80;
-  // FwVelocitySet( 70, 1 );
   FlyFront.spin(reverse, 460, rpm);
   FlyBack.spin(reverse, 460, rpm);
 
@@ -281,29 +266,23 @@ void soloAWP(){
   Indexer.stop();
 }
 
-void twopointer(){
-  driveForDist(-20, 3000, 0.6);
-  driveForDist(20, 3000, 0.6);
-}
-
 void tuning(){
-  twopointer();
-  //soloAWP();
-  //rollerStart();
-  //driveForDist(10, 5000, 1);
-  //driveForDist(-10, 5000, 1);
-  //turnTo(90, 4000);
+  FwVelocitySet(2000, 0.67);
+  // Intake.spin(fwd, 100, pct);
+  // Indexer.spin(fwd, 100, pct);
+  // driveForDist(46, 3000, 0.6);
+  // turnToAngle(270, 1300);
 
+  waitUntil(-Flywheel.velocity(rpm) > 1990  && -Flywheel.velocity(rpm) < 2010);
+  shoot();
+  waitUntil(-Flywheel.velocity(rpm) > 1990  && -Flywheel.velocity(rpm) < 2010);
+  shoot();
 }
+
+/*---------------------------------------------------------- AUTONOMOUS CONTROL ----------------------------------------------------------*/
 
 void autonomous(void) {
-  // ..........................................................................
-  // Insert autonomous user code here.
-  // ..........................................................................
-
-  //reset sensors
   Left.resetRotation();
-  //Right.resetRotation();
   Side.resetPosition();
 
   FL.resetRotation();
@@ -312,12 +291,10 @@ void autonomous(void) {
   BR.resetRotation();
   DRIVER_CONTROL = false;
 
-  //start odom
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
   task flywheelTask(FwControlTask);
-
 
   waitUntil(!Inertial.isCalibrating());
 
@@ -328,19 +305,13 @@ void autonomous(void) {
   //nonRollerStart();
 }
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                              User Control Task                            */
-/*                                                                           */
-/*  This task is used to control your robot during the user control phase of */
-/*  a VEX Competition.                                                       */
-/*                                                                           */
-/*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------- DRIVER METHODS ----------------------------------------------------------*/
 
 double exponentialDrive(double controllerValue) {
   return pow(controllerValue, 3) / pow(100, 2);
 }
+
+// INTAKE
 
 bool intakeTrue = false;
 bool outTakeTrue = false;
@@ -378,120 +349,10 @@ void intakeControl(){
   }
 }
 
-void puncherControl(){
-  if (Controller1.ButtonUp.PRESSED){
-    Indexer.setVelocity(100, pct);
-    Intake.setVelocity(90, pct);
-    
-    if (flyWheelOn && -FlyFront.velocity(rpm) > 270)
-    {
-      Indexer.spin(reverse);
-      Intake.spin(fwd);
-      flywheelVoltage = 10.2;
-      Double1.set(true);
-      Pressure.set(true);
-      wait(2000, msec);
-      Pressure.set(false);
-      Double1.set(false);
-      Indexer.stop();
-      Intake.stop();
-      flywheelVoltage = 8;
-    }
-    else {  
-      flyWheelOn = true; 
-    }
-  }
-}
+// SHOOTING
 
-void catapultControl(){
-  if (Controller1.ButtonY.pressing() && Controller1.ButtonRight.pressing()){  
-    Endgame.set(true);
-  }
-}
-
-void rollerControl(){
-  if (Controller1.ButtonA.pressing()){
-    Indexer.spin(fwd, 40, pct);
-  }
-}
-
-bool pump;
-
-void usercontrol(void) {
-  //flywheelTask.stop();
-
-  //https://www.vexforum.com/t/what-do-you-think-is-a-more-efficient-way-to-drive-your-robot/64857/35
-
-  DRIVER_CONTROL = true;
-  driverControl = true;
-
-  Endgame.set(false);
-
-  Left.resetRotation();
-
-  FL.resetRotation();
-  FR.resetRotation();
-  BL.resetRotation();
-  BR.resetRotation();
-
-  FL.setBrake(brakeType::coast);
-  FR.setBrake(brakeType::coast);
-  BL.setBrake(brakeType::coast);
-  BR.setBrake(brakeType::coast);
-  
-  odometryTask.stop();
-  drawFieldTask.stop();
-  chassisControlTask.stop();
-  
-  task odometryTask(positionTracking);
-  task drawFieldTask(drawField);
-  //task chassisControlTask(chassisControl);
-  task flywheelTask(FwControlTask);
-
-  FlyFront.setBrake(coast);
-  FlyBack.setBrake(coast);
-
-  pump = false;
-
-  while (1) {
-    float maxSpeed = 100;
-    // float leftPct = (Controller1.Axis3.position())/maxSpeed;
-    // float rightPct = (Controller1.Axis2.position())/maxSpeed;
-
-    // float leftNewPct = leftPct * leftPct * leftPct * 100;
-    // float rightNewPct = rightPct * rightPct * rightPct * 100;
-
-    int exp = 3;
-
-    float leftPct = (Controller1.Axis3.position());
-    float rightPct = (Controller1.Axis2.position());
-
-    float arcadeLeftPct = (Controller1.Axis3.position() + Controller1.Axis1.position());
-    float arcadeRightPct = (Controller1.Axis3.position() - Controller1.Axis1.position());
-
-    float leftNewPct = pow(leftPct, exp)/pow(maxSpeed, exp-1);
-    float rightNewPct = pow(rightPct, exp)/pow(maxSpeed, exp-1);
-
-    float arcadeLeftNewPct = pow(arcadeLeftPct, exp)/pow(maxSpeed, exp-1);
-    float arcadeRightNewPct = pow(arcadeRightPct, exp)/pow(maxSpeed, exp-1);
-
-
-    FL.spin(fwd, leftNewPct, pct);
-    BL.spin(fwd, leftNewPct, pct);
-    FR.spin(fwd, rightNewPct, pct);
-    BR.spin(fwd, rightNewPct, pct);
-
-    // FL.spin(fwd, arcadeLeftNewPct, pct);
-    // BL.spin(fwd, arcadeLeftNewPct, pct);
-    // FR.spin(fwd, arcadeRightNewPct, pct);
-    // BR.spin(fwd, arcadeRightNewPct, pct);
-
-    intakeControl();
-    puncherControl();
-    catapultControl();
-    rollerControl();
-
-    if (flyWheelOn){
+void flywheelControl(){
+  if (flyWheelOn){
       FL.setBrake(brake);
       FR.setBrake(brake);
       BR.setBrake(brake);
@@ -506,50 +367,175 @@ void usercontrol(void) {
 
     if (Controller1.ButtonL1.PRESSED){
       flyWheelOn = true;
-      //FlyBack.spin(fwd);
+      FwVelocitySet( 2000, 0.67 );  
     }
     if (Controller1.ButtonL2.PRESSED){
       flyWheelOn = false;
-      //FwVelocitySet( 0, 0 );      
+      FwVelocitySet( 0, 0 );      
     }
+}
 
-    //std::cout << FlyFront.velocity(rpm) << std::endl << std::endl;
+void shooterControl(){
+  if (Controller1.ButtonUp.PRESSED){
+    Indexer.setVelocity(100, pct);
+    Intake.setVelocity(90, pct);
+    
+    if (flyWheelOn && -FlyFront.velocity(rpm) > 270)
+    {
+      Indexer.spin(reverse);
+      Intake.spin(fwd);
+      flywheelVoltage = 10.2;
+      IndexPiston.set(true);
+      Pressure.set(true);
+      wait(1500, msec);
+      Pressure.set(false);
+      IndexPiston.set(false);
+      Indexer.stop();
+      Intake.stop();
+      flywheelVoltage = 8;
+    }
+    else {  
+      flyWheelOn = true; 
+    }
+  }
+}
 
-    // std::cout << Brain.Timer.value() << "," 
-    //     << FlyFront.velocity(rpm) << "," <<  FlyFront.torque(Nm) << "," 
-    //     << FlyFront.current() << "," << FlyFront.voltage(volt)
-    //     << std::endl; 
+// ENDGAME
 
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
+void endgameControl(){
+  if (Controller1.ButtonY.pressing() && Controller1.ButtonRight.pressing()){  
+    Endgame.set(true);
+  }
+}
+    
+/*---------------------------------------------------------- USER CONTROL ----------------------------------------------------------*/
+
+void tuneTurns(){
+  if (Controller1.ButtonX.PRESSED){
+    turnkP += 1;
+  }
+  if (Controller1.ButtonA.PRESSED){
+    turnkP -= 1;
+  }
+  if (Controller1.ButtonY.PRESSED){
+    turnkD += 1;
+  }
+  if (Controller1.ButtonB.PRESSED){
+    turnkD -= 1;
+  }  
+  
+  // std::cout << turnkP << std::endl << std::endl;
+  // std::cout << turnkI << std::endl << std::endl;
+  // std::cout << turnkD << std::endl << std::endl;
+}
+
+void tuneFlywheel(){
+  if (Controller1.ButtonX.PRESSED){
+    flykP += 1;
+  }
+  if (Controller1.ButtonA.PRESSED){
+    flykP -= 1;
+  }
+  if (Controller1.ButtonY.PRESSED){
+    flykD += 1;
+  }
+  if (Controller1.ButtonB.PRESSED){
+    flykD -= 1;
+  }
+}
+
+void tankDrive(){
+  float maxSpeed = 100;
+
+  int exp = 3;
+
+  float leftPct = (Controller1.Axis3.position());
+  float rightPct = (Controller1.Axis2.position());
+
+  float leftNewPct = pow(leftPct, exp)/pow(maxSpeed, exp-1);
+  float rightNewPct = pow(rightPct, exp)/pow(maxSpeed, exp-1);
+
+  FL.spin(fwd, leftNewPct, pct);
+  BL.spin(fwd, leftNewPct, pct);
+  FR.spin(fwd, rightNewPct, pct);
+  BR.spin(fwd, rightNewPct, pct);
+}
+
+void arcadeDrive(){
+  float arcadeLeftPct = (Controller1.Axis3.position() + Controller1.Axis1.position() * 0.8);
+  float arcadeRightPct = (Controller1.Axis3.position() - Controller1.Axis1.position()* 0.8);
+
+  FL.spin(fwd, arcadeLeftPct, pct);
+  BL.spin(fwd, arcadeLeftPct, pct);
+  FR.spin(fwd, arcadeRightPct, pct);
+  BR.spin(fwd, arcadeRightPct, pct);
+}
+
+void usercontrol(void) {
+  DRIVER_CONTROL = true;
+  Endgame.set(false);
+
+  Left.resetRotation();
+  Side.resetPosition();
+
+  FL.setBrake(brakeType::coast);
+  FR.setBrake(brakeType::coast);
+  BL.setBrake(brakeType::coast);
+  BR.setBrake(brakeType::coast);
+  
+  task odometryTask(positionTracking);
+  task drawFieldTask(drawField);
+  task chassisControlTask(chassisControl);
+  task flywheelTask(FwControlTask);
+
+  FlyFront.setBrake(coast);
+  FlyBack.setBrake(coast);
+
+  Brain.Screen.clearScreen();
+
+  while (1) {
+    tankDrive();
+    //arcadeDrive();
+
+    if (Controller1.ButtonLeft.PRESSED){
+      // turnToPoint(30, 30, 1300, 1);
+      // waitUntil(runChassisControl == false);
+      //moveToPoint(70, 70, 3000, 0.7);
+    }
+    // if (Controller1.ButtonLeft.PRESSED){
+    //   turnToAngle(0, 3500);
+    //   //turnToAngle(90, 5000);
+    // }
+    // if (Controller1.ButtonDown.PRESSED){
+    //   driveForDist(-24, 3000, 1);
+    //   //turnToAngle(0, 5000);
+    // }
+
+    intakeControl();
+    shooterControl();
+    flywheelControl();
+    endgameControl();
+
+    wait(20, msec);
   }
 }
 
 int main() {
-  // Set up callbacks for autonomous and driver control periods.
-  //Competition.bStopAllTasksBetweenModes = true;
+  Competition.bStopAllTasksBetweenModes = true;
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
 
-  // Run the pre-autonomous function.
   pre_auton();
 
   std::cout << "----------------------------------------------------------------------------------------------------------------" << std::endl << std::endl;
-
-  Inertial.calibrate();
 
   while(Inertial.isCalibrating()) {
     task::sleep(100);
   }
 
-  std::cout << "IMU Calibrated" << std::endl << std::endl;
+  Controller1.rumble("-");
   
-  // Prevent main from exiting with an infinite loop.
   while (true) {
-    // Brain.Screen.printAt( 10, 125, "Left %6.1f", Left.position(deg));
-    // Brain.Screen.printAt( 10, 200, "Back %6.1f", Side.position(deg));
-
-    // Brain.Screen.printAt( 10, 75, "Angle %6.1f", Inertial.heading());
     wait(100, msec);
   }
 }

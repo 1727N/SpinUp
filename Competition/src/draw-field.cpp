@@ -1,10 +1,10 @@
 #include "draw-field.h"
 
-#define scale 240/140
+#define scale 240/144
 
 double goalSize = 7.865 * scale;
 
-int robotSize = 15 * scale;
+int robotSize = 16.5 * scale / 2;
 
 double lineOffset1 = 0;
 double lineOffset2 = 0;
