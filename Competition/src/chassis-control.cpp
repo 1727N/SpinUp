@@ -102,6 +102,12 @@ void turnToPoint(double xCoordToFace, double yCoordToFace, double timeOutLength 
 }
 
 void setDrivePower(double theta) {
+  if (onlyTurn || directDriveOn){
+    drivePowerFLBR = 1;
+    drivePowerFRBL = 1;
+    return;
+  }
+
   if (theta > M_PI_2 && theta < M_PI_2*3){
     drivePowerFLBR = -1;
     drivePowerFRBL = -1;
@@ -143,6 +149,8 @@ void drivePID() {
   }
   else {
     driveError = setPoint - currentPoint;
+    drivePowerFLBR = 1;
+    drivePowerFRBL = 1;
   }
   
   //use integral if close enough to target
@@ -186,19 +194,21 @@ double turnIntegralBound = 0.09;
 
 double turnDerivative = 0;
 
-// double turnkP = 57; 47
-// double turnkI = 0;
-// double turnkD = 180; 160
+// 1: generally ok 2: generally decent 3: sharp 90s
+// integral is really fucking stupid
 
-double turnkP = 56.5;
-double turnkI = 4.5;
-double turnkD = 180;
+// double turnkP = 56.5; 47;   40.5
+// double turnkI = 0;    3;    3
+// double turnkD = 180;  160;  150
+
+double turnkP = 47.5;
+double turnkI = 3;
+double turnkD = 160;
+
 
 double turnPowerPID = 0;
 
 void turnPID() {
-
-  //Error is equal to the difference between the current facing direction and the target direction
   turnError = currentAbsoluteOrientation - targetFacingAngle;
 
   if(fabs(turnError) > M_PI) {
@@ -234,6 +244,8 @@ void turnPID() {
     if(turnPowerPID > 12) {
       turnPowerPID = 12;
     }
+    drivePowerFLBR = 0;
+    drivePowerFRBL = 0;
   }
 
   // if (turnPowerPID < 1 && turnPowerPID > 0){
@@ -286,7 +298,7 @@ int chassisControl() {
         }
       }
 
-      setDrivePower(robotRelativeAngle);
+      //setDrivePower(robotRelativeAngle);
 
       //get PID values for driving and turning
       drivePID();
@@ -312,7 +324,7 @@ int chassisControl() {
         }
         if (restTime >= maxRestTime){
           runChassisControl = false;
-          std::cout << "<------------------ REACHED SETPOINT" << std::endl << std::endl;
+          std::cout << "<------------------ REACHED SETPOINT: " << Brain.timer(timeUnits::msec) << std::endl << std::endl;
         }
       }
 

@@ -225,16 +225,20 @@ void soloAWP(){
 }
 
 void tuning(){
-  FwVelocitySet(2500, 0.85);
+  //FwVelocitySet(2500, 0.85);
   // Intake.spin(fwd, 100, pct);
   // Indexer.spin(fwd, 100, pct);
   // driveForDist(46, 3000, 0.6);
   // turnToAngle(270, 1300);
 
-  waitUntil(-Flywheel.velocity(rpm) > 2490  && -Flywheel.velocity(rpm) < 2510);
-  shoot();
-  waitUntil(-Flywheel.velocity(rpm) > 2490  && -Flywheel.velocity(rpm) < 2510);
-  shoot();
+  // waitUntil(-Flywheel.velocity(rpm) > 2490  && -Flywheel.velocity(rpm) < 2510);
+  // shoot();
+  // waitUntil(-Flywheel.velocity(rpm) > 2490  && -Flywheel.velocity(rpm) < 2510);
+  // shoot();
+
+  driveForDist(-39, 3000, 1);
+  turnToAngle(0, 3000);
+  driveForDist(-39, 3000, 1);
 
   // moveToPoint(60, 70, 3000, 0.5);
 }
@@ -384,9 +388,28 @@ void tuneTurns(){
     turnkD -= 1;
   }  
   
-  // std::cout << turnkP << std::endl << std::endl;
-  // std::cout << turnkI << std::endl << std::endl;
-  // std::cout << turnkD << std::endl << std::endl;
+  std::cout << turnkP << std::endl << std::endl;
+  std::cout << turnkI << std::endl << std::endl;
+  std::cout << turnkD << std::endl << std::endl;
+}
+
+void tuneDrive(){
+  if (Controller1.ButtonX.PRESSED){
+    drivekP += 1;
+  }
+  if (Controller1.ButtonA.PRESSED){
+    drivekP -= 1;
+  }
+  if (Controller1.ButtonY.PRESSED){
+    drivekD += 1;
+  }
+  if (Controller1.ButtonB.PRESSED){
+    drivekD -= 1;
+  }  
+  
+  std::cout << drivekP << std::endl << std::endl;
+  std::cout << drivekI << std::endl << std::endl;
+  std::cout << drivekD << std::endl << std::endl;
 }
 
 void tuneFlywheel(){
@@ -437,13 +460,13 @@ void tankDrive(){
 }
 
 void arcadeDrive(){
-  float arcadeLeftPct = (Controller1.Axis3.position() + Controller1.Axis1.position() * 0.8);
-  float arcadeRightPct = (Controller1.Axis3.position() - Controller1.Axis1.position()* 0.8);
+  float arcadeLeftPct = (Controller1.Axis3.position() + Controller1.Axis1.position() * 0.6);
+  float arcadeRightPct = (Controller1.Axis3.position() - Controller1.Axis1.position()* 0.6);
 
-  FL.spin(fwd, arcadeLeftPct, pct);
-  BL.spin(fwd, arcadeLeftPct, pct);
-  FR.spin(fwd, arcadeRightPct, pct);
-  BR.spin(fwd, arcadeRightPct, pct);
+  FL.spin(fwd, arcadeLeftPct * 0.5, pct);
+  BL.spin(fwd, arcadeLeftPct * 0.5, pct);
+  FR.spin(fwd, arcadeRightPct * 0.5, pct);
+  BR.spin(fwd, arcadeRightPct * 0.5, pct);
 }
 
 void usercontrol(void) {
@@ -458,9 +481,9 @@ void usercontrol(void) {
   BL.setBrake(brakeType::coast);
   BR.setBrake(brakeType::coast);
   
-  //task odometryTask(positionTracking);
-  //task drawFieldTask(drawField);
-  //task chassisControlTask(chassisControl);
+  // task odometryTask(positionTracking);
+  // task drawFieldTask(drawField);
+  // task chassisControlTask(chassisControl);
   task flywheelTask(FwControlTask);
 
   FlyFront.setBrake(coast);
@@ -472,14 +495,22 @@ void usercontrol(void) {
     //tankDrive();
     arcadeDrive();
 
+    //tuneDrive();
+
     // if (Controller1.ButtonLeft.PRESSED){
     //   turnToPoint(30, 30, 1300, 1);
     //   waitUntil(runChassisControl == false);
     //   moveToPoint(70, 70, 3000, 0.7);
     // }
     // if (Controller1.ButtonLeft.PRESSED){
-    //   turnToAngle(0, 3500);
-    //   //turnToAngle(90, 5000);
+    //   turnToAngle(0, 1300);
+    // }
+    // if (Controller1.ButtonRight.PRESSED){
+    //   turnToAngle(180, 1300);
+    // }
+    // if (Controller1.ButtonUp.PRESSED)
+    // {
+    //   driveForDist(-39, 2000, 1);
     // }
     // if (Controller1.ButtonDown.PRESSED){
     //   driveForDist(-24, 3000, 1);
