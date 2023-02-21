@@ -90,7 +90,7 @@ void shoot(){
   Intake.spin(fwd);
   IndexPiston.set(true);
   Pressure.set(true);
-  wait(400, msec);
+  wait(300, msec);
   Pressure.set(false);
   IndexPiston.set(false);
   Indexer.stop();
@@ -192,30 +192,32 @@ void soloAWP(){
 
   driveForDist(8, 1300, 1);
 
-  turnToAngle(315, 1000);
+  turnToAngle(135, 1300);
 
-  FlyFront.spin(reverse, 460, rpm);
-  FlyBack.spin(reverse, 460, rpm);
+  int speed = 2350;
 
-  driveForDist(63, 2000, 1);
+  FwVelocitySet(speed, 0.85);
 
-  turnToAngle(40, 1000);
+  // FlyFront.spin(reverse, 460, rpm);
+  // FlyBack.spin(reverse, 460, rpm);
+
+  driveForDist(61, 2000, 1);
+
+  turnToAngle(220, 1300);
+  waitUntil(-Flywheel.velocity(rpm) > speed-15  && -Flywheel.velocity(rpm) < speed+15);
+  shoot();
+  waitUntil(-Flywheel.velocity(rpm) > speed-15  && -Flywheel.velocity(rpm) < speed+15);
   shoot();
 
-  Intake.spin(fwd, 100, pct);
-  Indexer.spin(fwd, 100, pct);
-  wait(800, msec);
+  wait(500, msec);
 
-  Intake.stop();
-  Indexer.stop();
+  FwVelocitySet(0, 0);
 
-  shoot();
-
-  turnToAngle(133, 1000);
+  turnToAngle(313, 1300);
 
   driveForDist(-59, 1700, 1);
 
-  turnToAngle(90, 800);
+  turnToAngle(270, 1300);
 
   driveForDist(-15, 1300, 1);
 
@@ -236,9 +238,9 @@ void tuning(){
   // waitUntil(-Flywheel.velocity(rpm) > 2490  && -Flywheel.velocity(rpm) < 2510);
   // shoot();
 
-  driveForDist(-39, 3000, 1);
-  turnToAngle(0, 3000);
-  driveForDist(-39, 3000, 1);
+  // driveForDist(-39, 3000, 1);
+  // turnToAngle(0, 3000);
+  // driveForDist(-39, 3000, 1);
 
   // moveToPoint(60, 70, 3000, 0.5);
 }
@@ -263,8 +265,8 @@ void autonomous(void) {
   waitUntil(!Inertial.isCalibrating());
 
   //autonSkills();
-  tuning();
-  //soloAWP();
+  //tuning();
+  soloAWP();
   //rollerStart();
   //nonRollerStart();
 }
@@ -317,10 +319,10 @@ void intakeControl(){
 
 void flywheelControl(){
   if (flyWheelOn){
-      FL.setBrake(brake);
-      FR.setBrake(brake);
-      BR.setBrake(brake);
-      BL.setBrake(brake);
+      // FL.setBrake(brake);
+      // FR.setBrake(brake);
+      // BR.setBrake(brake);
+      // BL.setBrake(brake);
     }
     else {
       FL.setBrake(coast);
@@ -348,7 +350,7 @@ void shooterControl(){
     {
       Indexer.spin(reverse);
       Intake.spin(fwd);
-      flywheelVoltage = 10.2;
+      flywheelVoltage = 10;
       IndexPiston.set(true);
       Pressure.set(true);
       wait(1500, msec);
@@ -356,7 +358,7 @@ void shooterControl(){
       IndexPiston.set(false);
       Indexer.stop();
       Intake.stop();
-      flywheelVoltage = 8;
+      flywheelVoltage = 7;
     }
     else {  
       flyWheelOn = true; 
@@ -492,8 +494,8 @@ void usercontrol(void) {
   Brain.Screen.clearScreen();
 
   while (1) {
-    //tankDrive();
-    arcadeDrive();
+    tankDrive();
+    //arcadeDrive();
 
     //tuneDrive();
 

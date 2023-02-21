@@ -194,22 +194,22 @@ int FwControlTask()
 
       loopCount = 0;
     }
-    // if (DRIVER_CONTROL){
-    //   if (flyWheelOn){
-    //     flyWheelPID();
-    //     //flyPowerPID = flywheelVoltage;
-    //     FlyFront.spin(reverse, flyPowerPID, volt);
-    //     FlyBack.spin(reverse, flyPowerPID, volt);
+    if (DRIVER_CONTROL){
+      if (flyWheelOn){
+        flyWheelPID();
+        flyPowerPID = flywheelVoltage;
+        FlyFront.spin(reverse, flyPowerPID, volt);
+        FlyBack.spin(reverse, flyPowerPID, volt);
         
-    //     //FlyFront.spin(reverse, 400, rpm);
-    //     //FlyBack.spin(reverse, 400, rpm);
-    //   }
-    //   else {
-    //     FlyFront.stop(coast);
-    //     FlyBack.stop(coast);
-    //   }
-    // }
-    // else {
+        //FlyFront.spin(reverse, 400, rpm);
+        //FlyBack.spin(reverse, 400, rpm);
+      }
+      else {
+        FlyFront.stop(coast);
+        FlyBack.stop(coast);
+      }
+    }
+    else {
     FwCalculateSpeed();
 
 		// Do the velocity TBH calculations
@@ -230,7 +230,7 @@ int FwControlTask()
     // std::cout << Flywheel.velocity(rpm) << std::endl;
     // std::cout << current_error << std::endl;
     // std::cout << motor_drive << std::endl << std::endl;
-    //}
+    }
     task::sleep(10);
 	}
 }
