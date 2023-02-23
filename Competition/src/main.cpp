@@ -83,7 +83,10 @@ void rollFor(int timeRoll){
   Intake.stop();
 }
 
+int targetSpeed;
+
 void shoot(){
+  waitUntil(-Flywheel.velocity(rpm) > targetSpeed-15  && -Flywheel.velocity(rpm) < targetSpeed+15);
   Indexer.setVelocity(100, pct);
   Intake.setVelocity(90, pct);
   Indexer.spin(reverse);
@@ -95,7 +98,19 @@ void shoot(){
   IndexPiston.set(false);
   Indexer.stop();
   Intake.stop();
-  wait(500, msec);
+  wait(300, msec);
+}
+
+void cycle(){
+  Indexer.spin(reverse);
+  Intake.spin(fwd);
+  IndexPiston.set(true);
+  Pressure.set(true);
+  wait(1500, msec);
+  Pressure.set(false);
+  IndexPiston.set(false);
+  Indexer.stop();
+  Intake.stop();
 }
 
 /*---------------------------------------------------------- AUTONOMOUS PROGRAMS ----------------------------------------------------------*/
@@ -182,7 +197,7 @@ void nonRollerStart(){
 }
 
 void soloAWP(){
-  THETA_START = 0;
+  THETA_START = 180;
 
   driveForDist(-4.5, 800, 1);
 
@@ -194,9 +209,9 @@ void soloAWP(){
 
   turnToAngle(135, 1300);
 
-  int speed = 2350;
+  targetSpeed = 2350;
 
-  FwVelocitySet(speed, 0.85);
+  FwVelocitySet(targetSpeed, 0.85);
 
   // FlyFront.spin(reverse, 460, rpm);
   // FlyBack.spin(reverse, 460, rpm);
@@ -204,9 +219,8 @@ void soloAWP(){
   driveForDist(61, 2000, 1);
 
   turnToAngle(220, 1300);
-  waitUntil(-Flywheel.velocity(rpm) > speed-15  && -Flywheel.velocity(rpm) < speed+15);
+  
   shoot();
-  waitUntil(-Flywheel.velocity(rpm) > speed-15  && -Flywheel.velocity(rpm) < speed+15);
   shoot();
 
   wait(500, msec);
@@ -224,6 +238,95 @@ void soloAWP(){
   Indexer.spin(reverse, 100, pct);
   wait(700, msec);
   Indexer.stop();
+}
+
+void skillsOne(){
+  driveForDist(-4.5, 800, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(8, 1300, 1);
+  // first roller done
+
+  turnToAngle(225, 1300);
+
+  Intake.spin(fwd);
+  Indexer.spin(fwd);
+
+  driveForDist(8, 2000, 0.5);
+
+  // intake first disk
+
+  turnToAngle(90, 1300);
+
+  driveForDist(-12, 2000, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(8, 1300, 1);
+
+  // second roller done
+
+  turnToAngle(180, 1300);
+
+  driveForDist(50, 3000, 1);
+
+  turnToAngle(170, 1000);
+
+  cycle();
+
+  // first cycle done
+
+  driveForDist(-8, 1200, 1);
+
+  turnTo(90, 1300);
+
+  Intake.spin(fwd);
+  Indexer.spin(fwd);
+
+  driveForDist(120, 6000, 0.6);
+
+  // intake three
+
+  turnToAngle(0, 1300);
+
+  driveForDist(28, 3000, 1);
+
+  turnTo(350, 1300);
+
+  cycle();
+
+  // second cycle done
+
+  driveForDist(-12, 2000, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(24, 1300, 1);
+
+  // third roller done
+
+  turnToAngle(0, 1300);
+  
+  driveForDist(-24, 2000, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(24, 1300, 1);
+
+  // fourth roller done
+
+  turnToAngle(315, 1300);
+
+  // launch endgame!!
 }
 
 void tuning(){
