@@ -143,7 +143,15 @@ double drivePowerPID = 0;
 bool isPositive;
 
 void drivePID() {
-  driveError = setPoint - currentPoint;
+  //Error is equal to the total distance away from the target (uses distance formula with current position and target location)
+  if (!directDriveOn){
+    driveError = sqrt(pow((xPosGlobal - xTargetLocation), 2) + pow((yPosGlobal - yTargetLocation), 2));
+  }
+  else {
+    driveError = setPoint - currentPoint;
+    drivePowerFLBR = 1;
+    drivePowerFRBL = 1;
+  }
   
   // only integrate when we are within the tolerance zone (fabs = absolute value)
   if(fabs(driveError) < driveIntegralBound) {

@@ -241,71 +241,98 @@ void soloAWP(){
 }
 
 void skillsOne(){
+  Intake.setVelocity(100, pct);
+  Indexer.setVelocity(100, pct);
+
+  THETA_START = 180;
+
   driveForDist(-4.5, 800, 1);
 
   Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
+  wait(600, msec);
   Indexer.stop();
 
-  driveForDist(8, 1300, 1);
+  driveForDist(5, 1300, 1);
   // first roller done
 
-  turnToAngle(225, 1300);
+  turnToAngle(235, 1300);
 
   Intake.spin(fwd);
   Indexer.spin(fwd);
 
-  driveForDist(8, 2000, 0.5);
+  driveForDist(14, 2500, 0.5);
 
   // intake first disk
 
   turnToAngle(90, 1300);
 
-  driveForDist(-12, 2000, 1);
+  Intake.stop();
+  Indexer.stop();
 
-  Indexer.spin(reverse, 100, pct);
+  driveForDist(-13, 2000, 1);
+  
+  Indexer.spin(fwd, 100, pct);
   wait(400, msec);
   Indexer.stop();
 
-  driveForDist(8, 1300, 1);
+  driveForDist(2, 1000, 1);
 
   // second roller done
+  
+  FwVelocitySet(2000, 0.8);
 
   turnToAngle(180, 1300);
 
-  driveForDist(50, 3000, 1);
+  driveForDist(74, 4000, 1);
 
-  turnToAngle(170, 1000);
+  turnToAngle(162, 1000);
 
   cycle();
 
+  FwVelocitySet(0, 0);
+
+  turnToAngle(180, 1000);
+
   // first cycle done
 
-  driveForDist(-8, 1200, 1);
+  driveForDist(-12.5, 1200, 1);
 
-  turnTo(90, 1300);
+  turnToAngle(90, 1300);
 
   Intake.spin(fwd);
   Indexer.spin(fwd);
 
-  driveForDist(120, 6000, 0.6);
+  driveForDist(116, 6000, 0.5);
 
   // intake three
 
+  FwVelocitySet(2000, 0.8);
+
   turnToAngle(0, 1300);
 
-  driveForDist(28, 3000, 1);
+  driveForDist(34, 3000, 1);
 
-  turnTo(350, 1300);
+  Intake.stop();
+  Indexer.stop();
+
+  turnToAngle(350, 1300);
 
   cycle();
 
+  FwVelocitySet(0, 0);
+
   // second cycle done
 
-  driveForDist(-12, 2000, 1);
+  turnToAngle(2, 1300);
+
+  driveForDist(-65, 4000, 1);
+
+  turnToAngle(270, 1300);
+  
+  driveForDist(-3, 1000, 1);
 
   Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
+  wait(600, msec);
   Indexer.stop();
 
   driveForDist(24, 1300, 1);
@@ -367,9 +394,10 @@ void autonomous(void) {
 
   waitUntil(!Inertial.isCalibrating());
 
+  skillsOne();
   //autonSkills();
   //tuning();
-  soloAWP();
+  //soloAWP();
   //rollerStart();
   //nonRollerStart();
 }
