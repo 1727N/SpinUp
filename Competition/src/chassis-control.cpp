@@ -69,6 +69,13 @@ void directDrive(double xDist, double timeOutLength, double maxSpeed = 1.0){
 void turnTo(double targetAngle, double timeOutLength = 2500) {
   targetFacingAngle = targetAngle * toRadians;
 
+  if (fabs(targetFacingAngle - currentAbsoluteOrientation) > M_PI_2){
+    turnkI = 5;    
+  }
+  else {
+    turnkI = 7;
+  }
+
   xTargetLocation = xPosGlobal;
   yTargetLocation = yPosGlobal;
 

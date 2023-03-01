@@ -86,19 +86,33 @@ void rollFor(int timeRoll){
 int targetSpeed;
 
 void shoot(){
-  waitUntil(-Flywheel.velocity(rpm) > targetSpeed-15  && -Flywheel.velocity(rpm) < targetSpeed+15);
-  Indexer.setVelocity(100, pct);
-  Intake.setVelocity(90, pct);
+  waitUntil(-Flywheel.velocity(rpm) > targetSpeed-10  && -Flywheel.velocity(rpm) < targetSpeed+10);
+  Indexer.setVelocity(80, pct);
+  Intake.setVelocity(80, pct);
   Indexer.spin(reverse);
   Intake.spin(fwd);
   IndexPiston.set(true);
   Pressure.set(true);
-  wait(300, msec);
+  wait(400, msec);
   Pressure.set(false);
   IndexPiston.set(false);
   Indexer.stop();
   Intake.stop();
-  wait(300, msec);
+}
+
+void shoot(int timeFor){
+  waitUntil(-Flywheel.velocity(rpm) > targetSpeed-7  && -Flywheel.velocity(rpm) < targetSpeed+7);
+  Indexer.setVelocity(80, pct);
+  Intake.setVelocity(80, pct);
+  Indexer.spin(reverse);
+  Intake.spin(fwd);
+  IndexPiston.set(true);
+  Pressure.set(true);
+  wait(timeFor, msec);
+  Pressure.set(false);
+  IndexPiston.set(false);
+  Indexer.stop();
+  Intake.stop();
 }
 
 void cycle(){
@@ -186,18 +200,54 @@ void rollerStart(){
 
 void nonRollerStart(){
   THETA_START = 0;
+  
+  targetSpeed = 2280;
+  FwVelocitySet(targetSpeed, .8);
 
-  driveForDist(13, 3000, 1);
-  turnToAngle(270, 2000);
-  driveForDist(2, 3000, 1);
+  Intake.setVelocity(100, pct);
+  Indexer.setVelocity(100, pct);
 
   Intake.spin(fwd);
-  wait(500, msec);
+  Indexer.spin(fwd);
+
+  driveForDist(20, 1300, 0.5);
+
+  turnToAngle(156, 1300);
+
   Intake.stop();
+  Indexer.stop();
+
+  shoot(300);
+  shoot(300);
+  shoot(400);
+
+  turnToAngle(225, 1300);
+
+  Intake.spin(fwd);
+  Indexer.spin(fwd);
+
+  driveForDist(34, 2000, 1);
+
+  turnToAngle(135, 1300);
+
+  targetSpeed = 2280;
+  FwVelocitySet(targetSpeed, .8);
+
+  Intake.stop();
+  Indexer.stop();
+
+  shoot(400);
+  shoot(500);
 }
 
 void soloAWP(){
   THETA_START = 180;
+
+  targetSpeed = 2510;
+
+  //FlyFront.spin(reverse, 10.8, volt);
+  //FlyBack.spin(reverse, 10.8, volt);
+  FwVelocitySet(targetSpeed, .95);
 
   driveForDist(-4.5, 800, 1);
 
@@ -205,23 +255,34 @@ void soloAWP(){
   wait(400, msec);
   Indexer.stop();
 
-  driveForDist(8, 1300, 1);
+  driveForDist(3, 1000, 1);
+
+  turnToAngle(181, 1300);
+
+  shoot();
+  shoot(500);
 
   turnToAngle(135, 1300);
 
+  FwVelocitySet(0, 0);
+
+  driveForDist(22.5, 2000, 1);
+
+  Intake.spinFor(8, rev, false); 
+  Indexer.spinFor(8, rev, false); 
+
+  //Intake.spinFor(-200, degrees, false);
+
   targetSpeed = 2350;
+  FwVelocitySet(targetSpeed, 0.83);
 
-  FwVelocitySet(targetSpeed, 0.85);
+  driveForDist(43.5, 3000, 0.4);
 
-  // FlyFront.spin(reverse, 460, rpm);
-  // FlyBack.spin(reverse, 460, rpm);
-
-  driveForDist(61, 2000, 1);
-
-  turnToAngle(220, 1300);
+  turnToAngle(217, 1300);
   
-  shoot();
-  shoot();
+  shoot(400);
+  shoot(500);
+  shoot(500);
 
   wait(500, msec);
 
@@ -394,12 +455,12 @@ void autonomous(void) {
 
   waitUntil(!Inertial.isCalibrating());
 
-  skillsOne();
+  //skillsOne();
   //autonSkills();
   //tuning();
   //soloAWP();
   //rollerStart();
-  //nonRollerStart();
+  nonRollerStart();
 }
 
 /*---------------------------------------------------------- DRIVER METHODS ----------------------------------------------------------*/
