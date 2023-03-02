@@ -20,6 +20,7 @@ extern digital_out Pressure;
 extern rotation Side;
 extern controller Controller2;
 extern rotation Flywheel;
+extern digital_out Angler;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

@@ -1,3 +1,25 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// Side                 rotation      2               
+// Controller2          controller                    
+// Flywheel             rotation      3               
+// Angler               digital_out   D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -103,14 +125,14 @@ void shoot(){
 void shoot(int timeFor){
   waitUntil(-Flywheel.velocity(rpm) > targetSpeed-10  && -Flywheel.velocity(rpm) < targetSpeed+10);
   Indexer.setVelocity(80, pct);
-  Intake.setVelocity(80, pct);
-  Indexer.spin(reverse);
+  Indexer.spinFor(reverse, 250, deg);
+  //Indexer.spin(reverse);
   //Intake.spin(fwd);
-  wait(timeFor, msec);
-  Indexer.stop();
+  //waitUntil(-Flywheel.velocity(rpm) < targetSpeed - 60);
+  //wait(timeFor, msec);
+  Indexer.setVelocity(100, pct);
   Indexer.spin(fwd);
   wait(100, msec);
-  Indexer.stop();
   //Intake.stop();
 }
 
@@ -200,8 +222,8 @@ void rollerStart(){
 void nonRollerStart(){
   THETA_START = 0;
   
-  targetSpeed = 2350;
-  FwVelocitySet(targetSpeed, .87);
+  targetSpeed = 2320;
+  FwVelocitySet(targetSpeed, .84);
 
   Intake.setVelocity(100, pct);
   Indexer.setVelocity(100, pct);
@@ -219,9 +241,9 @@ void nonRollerStart(){
   //Intake.stop();
   Indexer.stop();
 
-  shoot(130);
-  shoot(170);
-  shoot(200);
+  shoot(110);
+  shoot(110);
+  shoot(110);
 
   wait(100, msec);
 
@@ -245,21 +267,21 @@ void nonRollerStart(){
   Pressure.set(true);
 
   //Intake.stop();
-  Indexer.stop();
+  //Indexer.stop();
 
   shoot(130);
-  shoot(200);
+  shoot(100);
 
   Pressure.set(false);
   IndexPiston.set(false);
 
-  turnToAngle(225, 900);
+  turnToAngle(233, 1000);
 
-  driveForDist(-50, 1000, 1);
+  driveForDist(-63, 2000, 1);
 
   turnToAngle(180, 800);
 
-  driveForDist(-4, 300, 1);
+  driveForDist(-8, 800, 1);
 
   Indexer.spin(reverse, 100, pct);
   wait(400, msec);
@@ -481,12 +503,12 @@ void autonomous(void) {
 
   waitUntil(!Inertial.isCalibrating());
 
-  skillsOne();
+  //skillsOne();
   //autonSkills();
   //tuning();
   //soloAWP();
   //rollerStart();
-  //nonRollerStart();
+  nonRollerStart();
 }
 
 /*---------------------------------------------------------- DRIVER METHODS ----------------------------------------------------------*/
@@ -591,6 +613,21 @@ void endgameControl(){
     Endgame.set(true);
   }
 }
+
+// ANGLER
+
+void anglerControl(){
+  if (Controller1.ButtonDown.pressing() && Controller1.ButtonB.pressing()){  
+    if (Angler.value() == true){
+      Angler.set(false);
+      wait(50, msec);
+    }
+    else {
+      Angler.set(true);
+      wait(50, msec);
+    }
+  }
+}
     
 /*---------------------------------------------------------- USER CONTROL ----------------------------------------------------------*/
 
@@ -692,6 +729,8 @@ void arcadeDrive(){
 void usercontrol(void) {
   DRIVER_CONTROL = true;
   Endgame.set(false);
+  Angler.set(true);
+  Pressure.set(false);
 
   Left.resetRotation();
   Side.resetPosition();
@@ -740,6 +779,7 @@ void usercontrol(void) {
     intakeControl();
     shooterControl();
     flywheelControl();
+    //anglerControl();
     endgameControl();
 
     wait(20, msec);

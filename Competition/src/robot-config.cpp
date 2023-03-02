@@ -25,6 +25,7 @@ digital_out Pressure = digital_out(Brain.ThreeWirePort.A);
 rotation Side = rotation(PORT2, false);
 controller Controller2 = controller(partner);
 rotation Flywheel = rotation(PORT3, false);
+digital_out Angler = digital_out(Brain.ThreeWirePort.D);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
