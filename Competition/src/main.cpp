@@ -378,7 +378,7 @@ void skillsOne(){
 
   FwVelocitySet(0, 0);
 
-  turnToAngle(158, 1000);
+  turnToAngle(182, 1000);
 
   // first cycle done
 
@@ -434,13 +434,12 @@ void skillsOne(){
   wait(400, msec);
   Indexer.stop();
 
-  driveForDist(20, 1300, 1);
+  driveForDist(16, 1300, 1);
 
   // fourth roller done
 
   turnToAngle(315, 1300);
 
-  driveForDist(-6, 1300, 1);
   // launch endgame!!
 }
 
