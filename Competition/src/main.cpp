@@ -350,6 +350,8 @@ void soloAWP(){
 }
 
 void skillsOne(){
+  Angler.set(true);
+
   Intake.setVelocity(100, pct);
   Indexer.setVelocity(100, pct);
 
@@ -432,35 +434,90 @@ void skillsOne(){
 
   // second cycle done
 
-  turnToAngle(4, 1300);
+  turnToAngle(0, 1300);
 
-  driveForDist(-70, 4000, 1);
+  driveForDist(-11, 2000, 1);
 
   turnToAngle(270, 1300);
-  
-  driveForDist(-6, 1300, 1);
 
-  Indexer.spin(reverse, 100, pct);
+  Intake.spin(fwd);
+  Indexer.spin(fwd);
+
+  driveForDist(117.5, 6000, 0.5);
+
+  FwVelocitySet(2000, 0.8);
+
+  turnToAngle(180, 1300);
+
+  driveForDist(35, 3000, 1);
+
+  turnToAngle(162, 1000);
+
+  cycle();
+
+  FwVelocitySet(0, 0);
+
+  turnToAngle(182, 1000);
+
+  // cycle three done
+
+  driveForDist(-14.5, 1200, 1);
+
+  turnToAngle(90, 1300);
+
+  driveForDist(100, 5000, 1);
+
+  turnToAngle(0, 1300);
+
+  driveForDist(50, 3000, 1);
+
+  Indexer.spin(fwd, 100, pct);
   wait(400, msec);
   Indexer.stop();
 
-  driveForDist(13, 1300, 1);
+  driveForDist(15, 2000, 1);
 
-  // third roller done
+  turnTo(90, 1300);
 
-  turnToAngle(0, 1300);
-  
   driveForDist(-15, 2000, 1);
 
   Indexer.spin(reverse, 100, pct);
   wait(400, msec);
   Indexer.stop();
 
-  driveForDist(16, 1300, 1);
-
-  // fourth roller done
+  driveForDist(10, 1300, 1);
 
   turnToAngle(315, 1300);
+
+  // BRUH?
+
+  // driveForDist(-70, 4000, 1);
+
+  // turnToAngle(270, 1300);
+  
+  // driveForDist(-6, 1300, 1);
+
+  // Indexer.spin(reverse, 100, pct);
+  // wait(400, msec);
+  // Indexer.stop();
+
+  // driveForDist(13, 1300, 1);
+
+  // // third roller done
+
+  // turnToAngle(0, 1300);
+  
+  // driveForDist(-15, 2000, 1);
+
+  // Indexer.spin(reverse, 100, pct);
+  // wait(400, msec);
+  // Indexer.stop();
+
+  // driveForDist(16, 1300, 1);
+
+  // // fourth roller done
+
+  // turnToAngle(315, 1300);
 
   // launch endgame!!
 }
