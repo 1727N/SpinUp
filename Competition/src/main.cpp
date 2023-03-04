@@ -15,6 +15,210 @@
 // Endgame              digital_out   B               
 // Indexer              motor         15              
 // Pressure             digital_out   A               
+// Flywheel             rotation      3               
+// Angler               digital_out   D               
+// Side                 rotation      2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// Flywheel             rotation      3               
+// Angler               digital_out   D               
+// Side                 rotation      2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// Flywheel             rotation      3               
+// Angler               digital_out   D               
+// Side                 rotation      2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// Flywheel             rotation      3               
+// Angler               digital_out   D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// Flywheel             rotation      3               
+// Angler               digital_out   D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// Flywheel             rotation      3               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         16              
+// Double1              digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         7               
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Side                 encoder       E, F            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Vision               vision        3               
+// Intake               motor         16              
+// Double1              digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
+// IntakePump           digital_out   D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// FlyFront             motor         5               
+// FlyBack              motor         6               
+// Intake               motor         16              
+// IndexPiston          digital_out   C               
+// Endgame              digital_out   B               
+// Indexer              motor         15              
+// Pressure             digital_out   A               
 // Side                 rotation      2               
 // Controller2          controller                    
 // Flywheel             rotation      3               
@@ -357,10 +561,10 @@ void skillsOne(){
 
   THETA_START = 180;
 
-  driveForDist(-4.5, 800, 1);
+  driveForDist(-6, 1000, 1);
 
   Indexer.spin(reverse, 100, pct);
-  wait(600, msec);
+  wait(400, msec);
   Indexer.stop();
 
   driveForDist(5, 1300, 1);
@@ -380,7 +584,7 @@ void skillsOne(){
   Intake.stop();
   Indexer.stop();
 
-  driveForDist(-13, 2000, 1);
+  driveForDist(-15, 2000, 1);
   
   Indexer.spin(fwd, 100, pct);
   wait(400, msec);
@@ -406,14 +610,14 @@ void skillsOne(){
 
   // first cycle done
 
-  driveForDist(-14.5, 1200, 1);
+  driveForDist(-15, 1200, 1);
 
   turnToAngle(90, 1300);
 
   Intake.spin(fwd);
   Indexer.spin(fwd);
 
-  driveForDist(117.5, 6000, 0.5);
+  driveForDist(115, 6000, 0.5);
 
   // intake three
 
@@ -434,24 +638,22 @@ void skillsOne(){
 
   // second cycle done
 
-  turnToAngle(0, 1500);
+  turnToAngle(2, 1500);
 
   Inertial.calibrate();
 
   waitUntil(!Inertial.isCalibrating());
 
-  wait(2, sec);
-
   //Inertial.setHeading(0, degrees);
 
-  driveForDist(-12, 2000, 1);
+  driveForDist(-13, 2000, 1);
 
   turnToAngle(91, 1300);
 
   Intake.spin(fwd);
   Indexer.spin(fwd);
 
-  driveForDist(117.5, 6000, 0.5);
+  driveForDist(117, 6000, 0.5);
 
   FwVelocitySet(1970, 0.8);
 
@@ -471,13 +673,13 @@ void skillsOne(){
 
   driveForDist(-14.5, 1200, 1);
 
-  turnToAngle(92, 1300);
+  turnToAngle(270, 1300);
 
-  driveForDist(-100, 5000, 0.3);
+  driveForDist(100, 5000, 0.4);
 
   turnToAngle(180, 1300);
 
-  driveForDist(-50, 4000, 0.5);
+  driveForDist(-65, 4000, 0.5);
 
   Indexer.spin(fwd, 100, pct);
   wait(400, msec);
@@ -530,23 +732,122 @@ void skillsOne(){
   // launch endgame!!
 }
 
-void tuning(){
-  //FwVelocitySet(2500, 0.85);
-  // Intake.spin(fwd, 100, pct);
-  // Indexer.spin(fwd, 100, pct);
-  // driveForDist(46, 3000, 0.6);
-  // turnToAngle(270, 1300);
+void skillsTwoCycle(){
+  Angler.set(true);
 
-  // waitUntil(-Flywheel.velocity(rpm) > 2495  && -Flywheel.velocity(rpm) < 2510);
-  // shoot();
-  // waitUntil(-Flywheel.velocity(rpm) > 2495  && -Flywheel.velocity(rpm) < 2510);
-  // shoot();
+  Intake.setVelocity(100, pct);
+  Indexer.setVelocity(100, pct);
 
-  // driveForDist(-39, 3000, 1);
-  // turnToAngle(0, 3000);
-  // driveForDist(-39, 3000, 1);
+  THETA_START = 180;
 
-  // moveToPoint(60, 70, 3000, 0.5);
+  driveForDist(-6, 1200, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(5, 1300, 1);
+  // first roller done
+
+  turnToAngle(235, 1300);
+
+  Intake.spin(fwd);
+  Indexer.spin(fwd);
+
+  driveForDist(14, 2500, 0.5);
+
+  // intake first disk
+
+  turnToAngle(90, 1300);
+
+  Intake.stop();
+  Indexer.stop();
+
+  driveForDist(-15, 2000, 1);
+  
+  Indexer.spin(fwd, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(2, 1000, 1);
+
+  // second roller done
+  
+  FwVelocitySet(2000, 0.8);
+
+  turnToAngle(180, 1300);
+
+  driveForDist(75, 4000, 1);
+
+  turnToAngle(162, 1000);
+
+  cycle();
+
+  FwVelocitySet(0, 0);
+
+  turnToAngle(182, 1000);
+
+  // first cycle done
+
+  driveForDist(-14.5, 1200, 1);
+
+  turnToAngle(90, 1300);
+
+  Intake.spin(fwd);
+  Indexer.spin(fwd);
+
+  driveForDist(117.5, 6000, 0.5);
+
+  // intake three
+
+  FwVelocitySet(2000, 0.8);
+
+  turnToAngle(0, 1300);
+
+  driveForDist(35, 3000, 1);
+
+  Intake.stop();
+  Indexer.stop();
+
+  turnToAngle(348, 1300);
+
+  cycle();
+
+  FwVelocitySet(0, 0);
+
+  // second cycle done
+
+  turnToAngle(4, 1300);
+
+  driveForDist(-70, 4000, 1);
+
+  turnToAngle(269, 1295);
+  
+  driveForDist(-6, 1300, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(13, 1300, 1);
+
+  // third roller done
+
+  turnToAngle(0, 1300);
+  
+  driveForDist(-17, 2000, 1);
+
+  Indexer.spin(reverse, 100, pct);
+  wait(400, msec);
+  Indexer.stop();
+
+  driveForDist(14, 1300, 1);
+
+  // fourth roller done
+
+  turnToAngle(315, 1300);
+
+  // launch endgame!!
 }
 
 /*---------------------------------------------------------- AUTONOMOUS CONTROL ----------------------------------------------------------*/
@@ -569,6 +870,7 @@ void autonomous(void) {
   waitUntil(!Inertial.isCalibrating());
 
   skillsOne();
+  //skillsTwoCycle();
   //autonSkills();
   //tuning();
   //soloAWP();
@@ -591,6 +893,9 @@ const int intakePct = 100;
 void intakeControl(){
   Intake.setVelocity( intakePct, pct);
   Indexer.setVelocity( intakePct, pct);
+  if (Controller1.ButtonY.PRESSED){
+    Indexer.spinFor(fwd, 400, msec);
+  }
   if (Controller1.ButtonR1.pressing()){
    intakeTrue = true;
   }
@@ -785,10 +1090,10 @@ void arcadeDrive(){
   float arcadeLeftPct = (Controller1.Axis3.position() + Controller1.Axis1.position() * 0.6);
   float arcadeRightPct = (Controller1.Axis3.position() - Controller1.Axis1.position()* 0.6);
 
-  FL.spin(fwd, arcadeLeftPct * 0.5, pct);
-  BL.spin(fwd, arcadeLeftPct * 0.5, pct);
-  FR.spin(fwd, arcadeRightPct * 0.5, pct);
-  BR.spin(fwd, arcadeRightPct * 0.5, pct);
+  FL.spin(fwd, arcadeLeftPct * 1, pct);
+  BL.spin(fwd, arcadeLeftPct * 1, pct);
+  FR.spin(fwd, arcadeRightPct * 1, pct);
+  BR.spin(fwd, arcadeRightPct * 1, pct);
 }
 
 void usercontrol(void) {

@@ -22,10 +22,9 @@ digital_out IndexPiston = digital_out(Brain.ThreeWirePort.C);
 digital_out Endgame = digital_out(Brain.ThreeWirePort.B);
 motor Indexer = motor(PORT15, ratio18_1, false);
 digital_out Pressure = digital_out(Brain.ThreeWirePort.A);
-rotation Side = rotation(PORT2, false);
-controller Controller2 = controller(partner);
 rotation Flywheel = rotation(PORT3, false);
 digital_out Angler = digital_out(Brain.ThreeWirePort.D);
+rotation Side = rotation(PORT2, false);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

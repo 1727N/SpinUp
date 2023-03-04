@@ -17,10 +17,9 @@ extern digital_out IndexPiston;
 extern digital_out Endgame;
 extern motor Indexer;
 extern digital_out Pressure;
-extern rotation Side;
-extern controller Controller2;
 extern rotation Flywheel;
 extern digital_out Angler;
+extern rotation Side;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
