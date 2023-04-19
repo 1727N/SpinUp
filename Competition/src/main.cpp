@@ -8,21 +8,116 @@
 // BR                   motor         20              
 // Inertial             inertial      18              
 // Left                 encoder       G, H            
-// FlyFront             motor         5               
-// FlyBack              motor         6               
-// Intake               motor         16              
-// IndexPiston          digital_out   C               
-// Endgame              digital_out   B               
-// Indexer              motor         15              
-// Pressure             digital_out   A               
-// Flywheel             rotation      3               
-// Angler               digital_out   D               
-// Side                 rotation      2               
+// Intake               motor         9               
+// Endgame              digital_out   C               
+// Catapult             motor         13              
+// MR                   motor         19              
+// ML                   motor         12              
+// PistonBoostL         digital_out   A               
+// PistonBoostR         digital_out   B               
+// Side                 encoder       E, F            
+// Limit                limit         D               
 // ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Intake               motor         9               
+// Endgame              digital_out   C               
+// Catapult             motor         13              
+// MR                   motor         19              
+// ML                   motor         12              
+// PistonBoostL         digital_out   A               
+// PistonBoostR         digital_out   B               
+// Side                 encoder       E, F            
+// Limit                limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Intake               motor         9               
+// Endgame              digital_out   C               
+// Catapult             motor         13              
+// MR                   motor         19              
+// ML                   motor         12              
+// PistonBoostL         digital_out   A               
+// PistonBoostR         digital_out   B               
+// Side                 encoder       E, F            
+// Limit                limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Intake               motor         9               
+// Endgame              digital_out   C               
+// Catapult             motor         13              
+// MR                   motor         19              
+// ML                   motor         12              
+// PistonBoostL         digital_out   A               
+// PistonBoostR         digital_out   B               
+// Side                 encoder       E, F            
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Intake               motor         9               
+// Endgame              digital_out   C               
+// Catapult             motor         13              
+// MR                   motor         19              
+// ML                   motor         12              
+// PistonBoostL         digital_out   A               
+// PistonBoostR         digital_out   B               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// Inertial             inertial      18              
+// Left                 encoder       G, H            
+// Intake               motor         9               
+// Endgame              digital_out   C               
+// Side                 rotation      2               
+// Catapult             motor         13              
+// MR                   motor         19              
+// ML                   motor         12              
+// PistonBoostL         digital_out   A               
+// PistonBoostR         digital_out   B               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+
 
 #include "chassis-control.h"
 #include "draw-field.h"
-#include "flywheel.h"
 #include <iostream>
 
 using namespace vex;
@@ -77,583 +172,36 @@ void rollFor(int timeRoll){
 int targetSpeed;
 
 void shoot(){
-  waitUntil(-Flywheel.velocity(rpm) > targetSpeed -10  && -Flywheel.velocity(rpm) < targetSpeed+10);
-  Indexer.setVelocity(80, pct);
-  Intake.setVelocity(80, pct);
-  Indexer.spin(reverse);
-  Intake.spin(fwd);
-  IndexPiston.set(true);
-  Pressure.set(true);
-  wait(400, msec);
-  Pressure.set(false);
-  IndexPiston.set(false);
-  Indexer.stop();
-  Intake.stop();
+
 }
 
 int shotClock;
 
 void shoot(int timeFor){
-  shotClock = 0;
-  if (shotClock < timeFor){
-    shotClock++;
-    waitUntil(-Flywheel.velocity(rpm) > targetSpeed-5  && -Flywheel.velocity(rpm) < targetSpeed+5);
-    Indexer.setVelocity(80, pct);
-    Indexer.spinFor(reverse, 200, deg);
-    Indexer.setVelocity(100, pct);
-    Indexer.spin(fwd);
-    wait(100, msec);
-  }
-  else {
-    Indexer.setVelocity(80, pct);
-    Indexer.spinFor(reverse, 200, deg);
-    Indexer.setVelocity(100, pct);
-    Indexer.spin(fwd);
-    wait(100, msec);
-  }
+
 }
-/*
-  waitUntil(-Flywheel.velocity(rpm) > targetSpeed-5  && -Flywheel.velocity(rpm) < targetSpeed+10);
-  Indexer.setVelocity(80, pct);
-  Indexer.spinFor(reverse, 200, deg);
-  //Indexer.spin(reverse);
-  //Intake.spin(fwd);
-  //waitUntil(-Flywheel.velocity(rpm) < targetSpeed - 60);
-  //wait(timeFor, msec);
-  Indexer.setVelocity(100, pct);
-  Indexer.spin(fwd);
-  wait(100, msec);
-  //Intake.stop();
-*/
-void cycle(){
-  Indexer.spin(reverse);
-  Intake.spin(fwd);
-  IndexPiston.set(true);
-  Pressure.set(true);
-  wait(1500, msec);
-  Pressure.set(false);
-  IndexPiston.set(false);
-  Indexer.stop();
-  Intake.stop();
-}
+
 
 /*---------------------------------------------------------- AUTONOMOUS PROGRAMS ----------------------------------------------------------*/
 
 // SKILLS
-void autonSkills() {
-  FL.spinFor(reverse, 180, degrees, false);
-  FR.spinFor(reverse, 180, degrees, false);
-  BL.spinFor(reverse, 180, degrees, false);
-  BR.spinFor(reverse, 180, degrees, true);
 
-  Indexer.spin(reverse, 60, pct);
-  wait(800, msec);
-  Indexer.stop();
-
-  FL.spinFor(fwd, 560, degrees, false);
-  FR.spinFor(fwd, 560, degrees, false);
-  BL.spinFor(fwd, 560, degrees, false);
-  BR.spinFor(fwd, 560, degrees, true);
-
-  turnToAngle(270, 4000);
-
-  FL.spinFor(reverse, 650, degrees, false);
-  FR.spinFor(reverse, 650, degrees, false);
-  BL.spinFor(reverse, 650, degrees, false);
-  BR.spinFor(reverse, 650, degrees, true);
-
-  Indexer.spin(reverse, 60, pct);
-  wait(800, msec);
-  Indexer.stop();
-
-  FL.spinFor(fwd, 360, degrees, false);
-  FR.spinFor(fwd, 360, degrees, false);
-  BL.spinFor(fwd, 360, degrees, false);
-  BR.spinFor(fwd, 360, degrees, true);
-
-  turnToAngle(315, 4000);
-}
-
-void rollerStart(){
-  THETA_START = 0;
-
-  driveForDist(-4.5, 800, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(8, 1300, 1);
-
-  turnToAngle(317, 1000);
-
-  FlyFront.spin(reverse, 450, rpm);
-  FlyBack.spin(reverse, 450, rpm);
-
-  driveForDist(63, 2000, 1);
-
-  turnToAngle(38, 1000);
-  shoot();
-
-  Intake.spin(fwd, 100, pct);
-  Indexer.spin(fwd, 100, pct);
-  wait(800, msec);
-
-  Intake.stop();
-  Indexer.stop();
-
-  shoot();
-
-  turnToAngle(0, 800);
-  driveForDist(-45, 2000, 1);
-}
-
-void nonRollerStart(){
-  THETA_START = 0;
-  
-  targetSpeed = 2380;
-  FwVelocitySet(targetSpeed, .85);
-
-  Intake.setVelocity(100, pct);
-  Indexer.setVelocity(100, pct);
-
-  Intake.spin(fwd);
-  Indexer.spin(fwd);
-
-  driveForDist(20, 1300, 0.8);
-
-  turnToAngle(157.5, 1100);
-
-  IndexPiston.set(true);
-  Pressure.set(true);
-
-  //Intake.stop();
-  Indexer.stop();
-
-  shoot(200);
-  shoot(400);
-  //shoot(300);
-
-  targetSpeed = 2340;
-  FwVelocitySet(targetSpeed, .84);
-
-  Pressure.set(false);
-  IndexPiston.set(false);
-
-  turnToAngle(224, 1100);
-
-  //Intake.spin(fwd);
-  Indexer.spin(fwd);
-
-  driveForDist(34, 2000, 1);
-
-  turnToAngle(135, 1300);
-
-  IndexPiston.set(true);
-  Pressure.set(true);
-
-  //Intake.stop();
-  //Indexer.stop();
-
-  shoot(300);
-  shoot(300);
-
-  Pressure.set(false);
-  IndexPiston.set(false);
-
-  Intake.stop();
-  Indexer.stop();
-
-  turnToAngle(230, 1100);
-
-  driveForDist(-54, 1300, 1);
-
-  turnToAngle(180, 700);
-
-  driveForDist(-14, 600, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(300, msec);
-  Indexer.stop();
-}
-
-void soloAWP(){
-  THETA_START = 180;
-
-  targetSpeed = 2510;
-
-  //FlyFront.spin(reverse, 10.8, volt);
-  //FlyBack.spin(reverse, 10.8, volt);
-  FwVelocitySet(targetSpeed, .95);
-
-  driveForDist(-4.5, 800, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(3, 1000, 1);
-
-  turnToAngle(181, 1300);
-
-  shoot();
-  shoot(500);
-
-  turnToAngle(135, 1300);
-
-  FwVelocitySet(0, 0);
-
-  driveForDist(22.5, 2000, 1);
-
-  Intake.spinFor(8, rev, false); 
-  Indexer.spinFor(8, rev, false); 
-
-  //Intake.spinFor(-200, degrees, false);
-
-  targetSpeed = 2350;
-  FwVelocitySet(targetSpeed, 0.83);
-
-  driveForDist(43.5, 3000, 0.4);
-
-  turnToAngle(217, 1300);
-  
-  shoot(400);
-  shoot(500);
-  shoot(500);
-
-  wait(500, msec);
-
-  FwVelocitySet(0, 0);
-
-  turnToAngle(313, 1300);
-
-  driveForDist(-59, 1700, 1);
-
-  turnToAngle(270, 1300);
-
-  driveForDist(-15, 1300, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(700, msec);
-  Indexer.stop();
-}
-
-void skillsOne(){
-  Angler.set(true);
-
-  Intake.setVelocity(100, pct);
-  Indexer.setVelocity(100, pct);
-
-  THETA_START = 180;
-
-  driveForDist(-6, 1000, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(5, 1300, 1);
-  // first roller done
-
-  turnToAngle(235, 1300);
-
-  Intake.spin(fwd);
-  Indexer.spin(fwd);
-
-  driveForDist(14, 2500, 0.5);
-
-  // intake first disk
-
-  turnToAngle(90, 1300);
-
-  Intake.stop();
-  Indexer.stop();
-
-  driveForDist(-15, 2000, 1);
-  
-  Indexer.spin(fwd, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(2, 1000, 1);
-
-  // second roller done
-  
-  FwVelocitySet(1970, 0.8);
-
-  turnToAngle(180, 1300);
-
-  driveForDist(75, 4000, 1);
-
-  turnToAngle(165, 1000);
-
-  cycle();
-
-  FwVelocitySet(0, 0);
-
-  turnToAngle(182, 1000);
-
-  // first cycle done
-
-  driveForDist(-15, 1200, 1);
-
-  turnToAngle(90, 1300);
-
-  Intake.spin(fwd);
-  Indexer.spin(fwd);
-
-  driveForDist(115, 6000, 0.5);
-
-  // intake three
-
-  FwVelocitySet(1970, 0.8);
-
-  turnToAngle(0, 1300);
-
-  driveForDist(35, 3000, 1);
-
-  Intake.stop();
-  Indexer.stop();
-
-  turnToAngle(353, 1300);
-
-  cycle();
-
-  FwVelocitySet(0, 0);
-
-  // second cycle done
-
-  turnToAngle(2, 1500);
-
-  Inertial.calibrate();
-
-  waitUntil(!Inertial.isCalibrating());
-
-  //Inertial.setHeading(0, degrees);
-
-  driveForDist(-13, 2000, 1);
-
-  turnToAngle(91, 1300);
-
-  Intake.spin(fwd);
-  Indexer.spin(fwd);
-
-  driveForDist(115, 6000, 0.5);
-
-  FwVelocitySet(1970, 0.8);
-
-  turnToAngle(0, 1300);
-
-  driveForDist(33, 3000, 0.5);
-
-  turnToAngle(353, 1500);
-
-  cycle();
-
-  FwVelocitySet(0, 0);
-
-  turnToAngle(0, 1300);
-
-  // cycle three done
-
-  driveForDist(-17, 1300, 1);
-
-  turnToAngle(268, 1300);
-
-  driveForDist(100, 5000, 0.4);
-
-  turnToAngle(186, 1300);
-
-  driveForDist(-65, 4000, 0.5);
-
-  Indexer.spin(fwd, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(15, 2000, 0.5);
-
-  turnToAngle(90, 1300);
-
-  driveForDist(-25, 2000, 0.8);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(10, 1300, 0.5);
-
-  turnToAngle(135, 1300);
-
-  driveForDist(4, 1300, 0.5);
-
-  Endgame.set(true);
-
-  // LAUNCH ENDGAME
-}
-
-void skillsTwoCycle(){
-  Angler.set(true);
-
-  Intake.setVelocity(100, pct);
-  Indexer.setVelocity(100, pct);
-
-  THETA_START = 180;
-
-  driveForDist(-6, 1200, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(5, 1300, 1);
-  // first roller done
-
-  turnToAngle(235, 1300);
-
-  Intake.spin(fwd);
-  Indexer.spin(fwd);
-
-  driveForDist(14, 2500, 0.5);
-
-  // intake first disk
-
-  turnToAngle(90, 1300);
-
-  Intake.stop();
-  Indexer.stop();
-
-  driveForDist(-15, 2000, 1);
-  
-  Indexer.spin(fwd, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(2, 1000, 1);
-
-  // second roller done
-  
-  FwVelocitySet(2000, 0.8);
-
-  turnToAngle(180, 1300);
-
-  driveForDist(75, 4000, 1);
-
-  turnToAngle(162, 1000);
-
-  cycle();
-
-  FwVelocitySet(0, 0);
-
-  turnToAngle(182, 1000);
-
-  // first cycle done
-
-  driveForDist(-14.5, 1200, 1);
-
-  turnToAngle(90, 1300);
-
-  Intake.spin(fwd);
-  Indexer.spin(fwd);
-
-  driveForDist(117.5, 6000, 0.5);
-
-  // intake three
-
-  FwVelocitySet(2000, 0.8);
-
-  turnToAngle(0, 1300);
-
-  driveForDist(35, 3000, 1);
-
-  Intake.stop();
-  Indexer.stop();
-
-  turnToAngle(348, 1300);
-
-  cycle();
-
-  FwVelocitySet(0, 0);
-
-  // second cycle done
-
-  turnToAngle(10, 1300);
-
-  driveForDist(-70, 4000, 1);
-
-  turnToAngle(269, 1295);
-  
-  driveForDist(-10, 1300, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(15, 1300, 1);
-
-  // third roller done
-
-  turnToAngle(0, 1300);
-  
-  driveForDist(-17, 2000, 1);
-
-  Indexer.spin(reverse, 100, pct);
-  wait(400, msec);
-  Indexer.stop();
-
-  driveForDist(14, 1300, 1);
-
-  // fourth roller done
-
-  turnToAngle(315, 1300);
-
-  Endgame.set(true);
-
-  // launch endgame!!
-}
-
-void twoShots(){
-  FwVelocitySet(2500, .9);
-
-  shoot(1000);
-
-  shoot(1000);
-}
-
-void twoPointer(){
-  driveForDist(-5, 1300, 1);
-
-  driveForDist(5, 1300, 1);
-
-  turnToAngle(235, 1300);
-}
 /*---------------------------------------------------------- AUTONOMOUS CONTROL ----------------------------------------------------------*/
 
 void autonomous(void) {
   Left.resetRotation();
-  Side.resetPosition();
+  Side.resetRotation();
 
   FL.resetRotation();
   FR.resetRotation();
   BL.resetRotation();
   BR.resetRotation();
-  DRIVER_CONTROL = false;
 
   task odometryTask(positionTracking);
   task drawFieldTask(drawField);
   task chassisControlTask(chassisControl);
-  task flywheelTask(FwControlTask);
 
   waitUntil(!Inertial.isCalibrating());
-
-  //skillsOne();
-  //skillsTwoCycle();
-  //autonSkills();
-  //tuning();
-  //soloAWP();
-  //rollerStart();
-  //nonRollerStart();
-  //twoShots();
-  twoPointer();
 }
 
 /*---------------------------------------------------------- DRIVER METHODS ----------------------------------------------------------*/
@@ -670,9 +218,9 @@ const int intakePct = 100;
 
 void intakeControl(){
   Intake.setVelocity( intakePct, pct);
-  Indexer.setVelocity( intakePct, pct);
+  Intake.setVelocity( intakePct, pct);
   if (Controller1.ButtonY.PRESSED){
-    Indexer.spinFor(fwd, 400, msec);
+    Intake.spinFor(fwd, 400, msec);
   }
   if (Controller1.ButtonR1.pressing()){
    intakeTrue = true;
@@ -681,98 +229,60 @@ void intakeControl(){
    intakeTrue = false;
    outTakeTrue = false;
    Intake.stop();
-   Indexer.stop();
+   Intake.stop();
   }
   if (intakeTrue){
    Intake.spin(fwd, intakePct, pct);
-   Indexer.spin(fwd, intakePct, pct);
+   Intake.spin(fwd, intakePct, pct);
   }
   if(Controller1.ButtonB.PRESSED) {
     outTakeTrue = !outTakeTrue;
     Intake.stop();
-    Indexer.stop();
+    Intake.stop();
   }
   if (outTakeTrue){
     Intake.spin(reverse, 100, pct);
-    Indexer.spin(reverse, 100, pct);
+    Intake.spin(reverse, 100, pct);
     Controller1.rumble(".");
   }
   else {
     Intake.setStopping(coast);
-    Indexer.setStopping(coast);
+    Intake.setStopping(coast);
   }
 }
 
 // SHOOTING
 
-void flywheelControl(){
-  if (DRIVER_CONTROL){
-    if (Controller1.ButtonL1.PRESSED){
-      flyWheelOn = true;
-    }
-    if (Controller1.ButtonL2.PRESSED){
-      flyWheelOn = false;
-    }
+int catapultSpeed = 100;
+int catapultTimer = 50;
 
-      if (flyWheelOn){
-        FlyFront.spin(reverse, flywheelVoltage, volt);
-        FlyBack.spin(reverse, flywheelVoltage, volt);
-        
-        //FlyFront.spin(reverse, 400, rpm);
-        //FlyBack.spin(reverse, 400, rpm);
-      }
-      else {
-        FlyFront.stop(coast);
-        FlyBack.stop(coast);
-      }
-    }
-  // if (flyWheelOn){
-  //     // FL.setBrake(brake);
-  //     // FR.setBrake(brake);
-  //     // BR.setBrake(brake);
-  //     // BL.setBrake(brake);
-  //   }
-  //   else {
-  //     FL.setBrake(coast);
-  //     FR.setBrake(coast);
-  //     BR.setBrake(coast);
-  //     BL.setBrake(coast);
-  //   }
+bool hitLimit;
 
-  //   if (Controller1.ButtonL1.PRESSED){
-  //     flyWheelOn = true;
-  //     FwVelocitySet( 2000, 0.67 );  
-  //   }
-  //   if (Controller1.ButtonL2.PRESSED){
-  //     flyWheelOn = false;
-  //     FwVelocitySet( 0, 0 );      
-  //   }
-}
-
-int flywheelPower;
-
-void shooterControl(){
-  if (Controller1.ButtonUp.PRESSED){
-    Indexer.setVelocity(100, pct);
-    Intake.setVelocity(90, pct);
-    
-    if (flyWheelOn && -FlyFront.velocity(rpm) > 270)
-    {
-      Indexer.spin(reverse);
-      Intake.spin(fwd);
-      flywheelPower = 10;
-      IndexPiston.set(true);
-      Pressure.set(true);
-      wait(1500, msec);
-      Pressure.set(false);
-      IndexPiston.set(false);
-      Indexer.stop();
-      Intake.stop();
-      flywheelPower = 7;
+void catapultControl(){
+  Catapult.setVelocity(100, pct);
+  if (Controller1.ButtonL1.PRESSED){
+    catapultTimer = 0;
+    hitLimit = false;
+    Catapult.setBrake(coast);
+    Catapult.spinFor(reverse, 400, msec);
+    PistonBoostL.set(true);
+    PistonBoostR.set(true);
+  }
+  if (!hitLimit && catapultTimer >= 50){
+    Catapult.setBrake(brake);
+    Catapult.spin(reverse);
+    PistonBoostL.set(false);
+    PistonBoostR.set(false);
+  }
+  else {
+    if (Limit.PRESSED){
+      hitLimit = true;
+      catapultTimer = 50;
+      Catapult.stop();
     }
-    else {  
-      flyWheelOn = true; 
-    }
+    catapultTimer++;
+    Catapult.setBrake(brake);
+    Catapult.stop(brake);
   }
 }
 
@@ -781,21 +291,6 @@ void shooterControl(){
 void endgameControl(){
   if (Controller1.ButtonY.pressing() && Controller1.ButtonRight.pressing()){  
     Endgame.set(true);
-  }
-}
-
-// ANGLER
-
-void anglerControl(){
-  if (Controller1.ButtonDown.pressing() && Controller1.ButtonB.pressing()){  
-    if (Angler.value() == true){
-      Angler.set(false);
-      wait(50, msec);
-    }
-    else {
-      Angler.set(true);
-      wait(50, msec);
-    }
   }
 }
     
@@ -839,35 +334,6 @@ void tuneDrive(){
   std::cout << drivekD << std::endl << std::endl;
 }
 
-void tuneFlywheel(){
-  if (Controller1.ButtonX.PRESSED){
-    flykP += 1;
-  }
-  if (Controller1.ButtonA.PRESSED){
-    flykP -= 1;
-  }
-  if (Controller1.ButtonY.PRESSED){
-    flykD += 1;
-  }
-  if (Controller1.ButtonB.PRESSED){
-    flykD -= 1;
-  }
-}
-
-void tuneTBH(){
-  if (Controller1.ButtonX.PRESSED){
-    gain += 0.00001;
-  }
-  if (Controller1.ButtonA.PRESSED){
-    gain -= 0.00001;
-  }
-
-  if (Brain.Timer.value() < 10){
-    std::cout << Brain.Timer.value() << "," << -Flywheel.velocity(rpm) << std::endl; 
-  }
-
-  //std::cout << gain << std::endl << std::endl;
-}
 
 void tankDrive(){
   float maxSpeed = 100;
@@ -882,8 +348,10 @@ void tankDrive(){
 
   FL.spin(fwd, leftNewPct, pct);
   BL.spin(fwd, leftNewPct, pct);
+  ML.spin(fwd, leftNewPct, pct);
   FR.spin(fwd, rightNewPct, pct);
   BR.spin(fwd, rightNewPct, pct);
+  MR.spin(fwd, rightNewPct, pct);
 }
 
 void arcadeDrive(){
@@ -897,13 +365,14 @@ void arcadeDrive(){
 }
 
 void usercontrol(void) {
-  DRIVER_CONTROL = true;
   Endgame.set(false);
-  Angler.set(true);
-  Pressure.set(false);
 
   Left.resetRotation();
-  Side.resetPosition();
+  Side.resetRotation();
+
+  Endgame.set(false);
+  PistonBoostL.set(false);
+  PistonBoostR.set(false);
 
   FL.setBrake(brakeType::coast);
   FR.setBrake(brakeType::coast);
@@ -913,10 +382,6 @@ void usercontrol(void) {
   // task odometryTask(positionTracking);
   // task drawFieldTask(drawField);
   // task chassisControlTask(chassisControl);
-  // task flywheelTask(FwControlTask);
-
-  FlyFront.setBrake(coast);
-  FlyBack.setBrake(coast);
 
   Brain.Screen.clearScreen();
 
@@ -947,9 +412,7 @@ void usercontrol(void) {
     // }
 
     intakeControl();
-    shooterControl();
-    flywheelControl();
-    //anglerControl();
+    catapultControl();
     endgameControl();
 
     wait(20, msec);

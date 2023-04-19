@@ -15,16 +15,15 @@ motor BL = motor(PORT11, ratio18_1, true);
 motor BR = motor(PORT20, ratio18_1, false);
 inertial Inertial = inertial(PORT18);
 encoder Left = encoder(Brain.ThreeWirePort.G);
-motor FlyFront = motor(PORT5, ratio6_1, true);
-motor FlyBack = motor(PORT6, ratio6_1, false);
-motor Intake = motor(PORT16, ratio18_1, false);
-digital_out IndexPiston = digital_out(Brain.ThreeWirePort.C);
-digital_out Endgame = digital_out(Brain.ThreeWirePort.B);
-motor Indexer = motor(PORT15, ratio18_1, false);
-digital_out Pressure = digital_out(Brain.ThreeWirePort.A);
-rotation Flywheel = rotation(PORT3, false);
-digital_out Angler = digital_out(Brain.ThreeWirePort.D);
-rotation Side = rotation(PORT2, false);
+motor Intake = motor(PORT9, ratio18_1, true);
+digital_out Endgame = digital_out(Brain.ThreeWirePort.C);
+motor Catapult = motor(PORT13, ratio18_1, false);
+motor MR = motor(PORT19, ratio18_1, false);
+motor ML = motor(PORT12, ratio18_1, true);
+digital_out PistonBoostL = digital_out(Brain.ThreeWirePort.A);
+digital_out PistonBoostR = digital_out(Brain.ThreeWirePort.B);
+encoder Side = encoder(Brain.ThreeWirePort.E);
+limit Limit = limit(Brain.ThreeWirePort.D);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
