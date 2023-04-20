@@ -265,25 +265,34 @@ void catapultControl(){
     hitLimit = false;
     Catapult.setBrake(coast);
     Catapult.spinFor(reverse, 400, msec);
-    PistonBoostL.set(true);
-    PistonBoostR.set(true);
+    // PistonBoostL.set(true);
+    // PistonBoostR.set(true);
+    std::cout << "Shoot" << std::endl;
   }
-  if (!hitLimit && catapultTimer >= 50){
+  if (Limit.pressing()){
+    hitLimit = true;
+    catapultTimer = 50;
+    Catapult.stop();
+    std::cout << "PRESSED" << std::endl;
+  }
+  if (hitLimit){
+    Catapult.setBrake(brake);
+    Catapult.stop();
+  }
+  else if (!hitLimit && catapultTimer < 50){
+    catapultTimer++;
+    PistonBoostL.set(false);
+    PistonBoostR.set(false);
+    std::cout << "BRUH1" << std::endl;
+  }
+  else if (!hitLimit && catapultTimer >= 50){
     Catapult.setBrake(brake);
     Catapult.spin(reverse);
     PistonBoostL.set(false);
     PistonBoostR.set(false);
+    std::cout << "BRUH2" << std::endl;
   }
-  else {
-    if (Limit.PRESSED){
-      hitLimit = true;
-      catapultTimer = 50;
-      Catapult.stop();
-    }
-    catapultTimer++;
-    Catapult.setBrake(brake);
-    Catapult.stop(brake);
-  }
+
 }
 
 // ENDGAME
