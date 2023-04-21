@@ -1,121 +1,3 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// Intake               motor         9               
-// Endgame              digital_out   C               
-// Catapult             motor         13              
-// MR                   motor         19              
-// ML                   motor         12              
-// PistonBoostL         digital_out   A               
-// PistonBoostR         digital_out   B               
-// Side                 encoder       E, F            
-// Limit                limit         D               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// Intake               motor         9               
-// Endgame              digital_out   C               
-// Catapult             motor         13              
-// MR                   motor         19              
-// ML                   motor         12              
-// PistonBoostL         digital_out   A               
-// PistonBoostR         digital_out   B               
-// Side                 encoder       E, F            
-// Limit                limit         D               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// Intake               motor         9               
-// Endgame              digital_out   C               
-// Catapult             motor         13              
-// MR                   motor         19              
-// ML                   motor         12              
-// PistonBoostL         digital_out   A               
-// PistonBoostR         digital_out   B               
-// Side                 encoder       E, F            
-// Limit                limit         D               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// Intake               motor         9               
-// Endgame              digital_out   C               
-// Catapult             motor         13              
-// MR                   motor         19              
-// ML                   motor         12              
-// PistonBoostL         digital_out   A               
-// PistonBoostR         digital_out   B               
-// Side                 encoder       E, F            
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// Intake               motor         9               
-// Endgame              digital_out   C               
-// Catapult             motor         13              
-// MR                   motor         19              
-// ML                   motor         12              
-// PistonBoostL         digital_out   A               
-// PistonBoostR         digital_out   B               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// FL                   motor         1               
-// FR                   motor         10              
-// BL                   motor         11              
-// BR                   motor         20              
-// Inertial             inertial      18              
-// Left                 encoder       G, H            
-// Intake               motor         9               
-// Endgame              digital_out   C               
-// Side                 rotation      2               
-// Catapult             motor         13              
-// MR                   motor         19              
-// ML                   motor         12              
-// PistonBoostL         digital_out   A               
-// PistonBoostR         digital_out   B               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-
-
 #include "chassis-control.h"
 #include "draw-field.h"
 #include <iostream>
@@ -264,16 +146,12 @@ void catapultControl(){
     catapultTimer = 0;
     hitLimit = false;
     Catapult.setBrake(coast);
-    Catapult.spinFor(reverse, 400, msec);
-    // PistonBoostL.set(true);
-    // PistonBoostR.set(true);
-    std::cout << "Shoot" << std::endl;
+    Catapult.spinFor(reverse, 250, msec);
   }
   if (Limit.pressing()){
     hitLimit = true;
     catapultTimer = 50;
     Catapult.stop();
-    std::cout << "PRESSED" << std::endl;
   }
   if (hitLimit){
     Catapult.setBrake(brake);
@@ -281,18 +159,15 @@ void catapultControl(){
   }
   else if (!hitLimit && catapultTimer < 50){
     catapultTimer++;
-    PistonBoostL.set(false);
-    PistonBoostR.set(false);
-    std::cout << "BRUH1" << std::endl;
+    PistonBoostL.set(true);
+    PistonBoostR.set(true);
   }
   else if (!hitLimit && catapultTimer >= 50){
     Catapult.setBrake(brake);
     Catapult.spin(reverse);
     PistonBoostL.set(false);
     PistonBoostR.set(false);
-    std::cout << "BRUH2" << std::endl;
   }
-
 }
 
 // ENDGAME
@@ -326,16 +201,16 @@ void tuneTurns(){
 
 void tuneDrive(){
   if (Controller1.ButtonX.PRESSED){
-    drivekP += 1;
+    drivekP += .1;
   }
   if (Controller1.ButtonA.PRESSED){
-    drivekP -= 1;
+    drivekP -= .1;
   }
   if (Controller1.ButtonY.PRESSED){
-    drivekD += 1;
+    drivekD += .1;
   }
   if (Controller1.ButtonB.PRESSED){
-    drivekD -= 1;
+    drivekD -= .1;
   }  
   
   std::cout << drivekP << std::endl << std::endl;
@@ -355,12 +230,12 @@ void tankDrive(){
   float leftNewPct = pow(leftPct, exp)/pow(maxSpeed, exp-1);
   float rightNewPct = pow(rightPct, exp)/pow(maxSpeed, exp-1);
 
-  FL.spin(fwd, leftNewPct, pct);
-  BL.spin(fwd, leftNewPct, pct);
-  ML.spin(fwd, leftNewPct, pct);
-  FR.spin(fwd, rightNewPct, pct);
-  BR.spin(fwd, rightNewPct, pct);
-  MR.spin(fwd, rightNewPct, pct);
+  FL.spin(fwd, leftPct, pct);
+  BL.spin(fwd, leftPct, pct);
+  ML.spin(fwd, leftPct, pct);
+  FR.spin(fwd, rightPct, pct);
+  BR.spin(fwd, rightPct, pct);
+  MR.spin(fwd, rightPct, pct);
 }
 
 void arcadeDrive(){
@@ -398,7 +273,8 @@ void usercontrol(void) {
     tankDrive();
     //arcadeDrive();
 
-    //tuneDrive();
+    // tuneDrive();
+    //tuneTurns();
 
     // if (Controller1.ButtonLeft.PRESSED){
     //   turnToPoint(30, 30, 1300, 1);
@@ -406,18 +282,18 @@ void usercontrol(void) {
     //   moveToPoint(70, 70, 3000, 0.7);
     // }
     // if (Controller1.ButtonLeft.PRESSED){
-    //   turnToAngle(0, 1300);
+    //   turnToAngle(0, 3000);
     // }
     // if (Controller1.ButtonRight.PRESSED){
-    //   turnToAngle(180, 1300);
+    //   turnToAngle(180, 3000);
     // }
     // if (Controller1.ButtonUp.PRESSED)
     // {
-    //   driveForDist(-39, 2000, 1);
+    //   driveForDist(24, 2000, 1);
     // }
     // if (Controller1.ButtonDown.PRESSED){
     //   driveForDist(-24, 3000, 1);
-    //   //turnToAngle(0, 5000);
+      //turnToAngle(90, 3000);
     // }
 
     intakeControl();

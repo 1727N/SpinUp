@@ -70,10 +70,10 @@ void turnTo(double targetAngle, double timeOutLength = 2500) {
   targetFacingAngle = targetAngle * toRadians;
 
   if (fabs(targetFacingAngle - currentAbsoluteOrientation) > M_PI_2){
-    turnkI = 5;    
+    // turnkI = 5;    
   }
   else {
-    turnkI = 7;
+    // turnkI = 7;
   }
 
   xTargetLocation = xPosGlobal;
@@ -141,9 +141,9 @@ double driveIntegralBound = 1.5;
 
 double driveDerivative = 0;
 
-double drivekP = 2.5;
+double drivekP = 1.2;
 double drivekI = 0.1;
-double drivekD = 3;
+double drivekD = 4;
 
 double drivePowerPID = 0;
 
@@ -201,16 +201,14 @@ double turnIntegralBound = 0.09;
 
 double turnDerivative = 0;
 
-// 1: generally ok 2: generally decent 3: sharp 90s
-// integral is really fucking stupid
 
-// double turnkP = 56.5; 47;   40.5
-// double turnkI = 0;    3;    3
-// double turnkD = 180;  160;  150
+// double turnkP = 30;  13
+// double turnkI = 0;   3.5
+// double turnkD = 80;  50
 
-double turnkP = 47.5;
-double turnkI = 3;
-double turnkD = 160;
+double turnkP = 13;
+double turnkI = 3.5;
+double turnkD = 50;
 
 
 double turnPowerPID = 0;
@@ -282,7 +280,7 @@ int chassisControl() {
   while(1) {
     if(runChassisControl) {
       if (directDriveOn){
-        currentPoint = -Left.position(rev) * 2.75 * M_PI;
+        currentPoint = Left.position(rev) * 2.75 * M_PI;
       }
       else {
         xDistToTarget = xTargetLocation - xPosGlobal;
@@ -319,8 +317,11 @@ int chassisControl() {
       
       FL.spin(directionType::fwd, FrontLeftPower, voltageUnits::volt);
       FR.spin(directionType::fwd, FrontRightPower, voltageUnits::volt);
+      ML.spin(directionType::fwd, FrontLeftPower, voltageUnits::volt);
+      MR.spin(directionType::fwd, FrontRightPower, voltageUnits::volt);
       BL.spin(directionType::fwd, BackLeftPower, voltageUnits::volt);
       BR.spin(directionType::fwd, BackRightPower, voltageUnits::volt);
+      
       
       if (onlyTurn){
         if (fabs(turnError) < turnMaxError){
@@ -362,6 +363,8 @@ int chassisControl() {
     else {
       FR.setBrake(brake);
       FL.setBrake(brake);
+      ML.setBrake(brake);
+      MR.setBrake(brake);
       BR.setBrake(brake);
       BL.setBrake(brake);
       FR.stop();
