@@ -1,3 +1,4 @@
+
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -228,6 +229,16 @@ void arcadeDrive(){
   BR.spin(fwd, arcadeRightPct * 1, pct);
 }
 
+int flyVoltage;
+int indexVoltage;
+
+void gunControl(){
+  indexVoltage = Trigger.pressing() ? 8 : 0;
+  FlyOne.spin(fwd, 8, volt);
+  FlyTwo.spin(fwd, 8, volt);
+  FlyThree.spin(fwd, 8, volt);
+}
+
 void usercontrol(void) {
   Left.resetRotation();
   Side.resetRotation();
@@ -244,7 +255,10 @@ void usercontrol(void) {
   Brain.Screen.clearScreen();
 
   while (1) {
-    tankDrive();
+
+    gunControl();
+
+    //tankDrive();
     //arcadeDrive();
 
     //intakeControl();
