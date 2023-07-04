@@ -22,8 +22,8 @@
 // Inertial             inertial      18              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
-#include "chassis-control.h"
-#include "draw-field.h"
+#include "drivetrain.h"
+#include "field.h"
 #include <iostream>
 
 using namespace vex;

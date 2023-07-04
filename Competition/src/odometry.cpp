@@ -5,18 +5,18 @@
 #define nonRollerStart M_PI_2
 #define AWPStart M_PI
 
-//Radius of tracking wheels in inches
+// Radius of tracking wheels in inches
 double WHEEL_RADIUS = 2.75;
 
-//Starting angle (relative to field) (RADIANS)
+// Starting angle (relative to field) (RADIANS)
 double THETA_START = rollerStart;
 
-//The starting x and y coordinates of the bot (INCHES)
-//Relative to: BOTTOM LEFT CORNER
+// The starting x and y coordinates of the bot (INCHES)
+// Relative to: BOTTOM LEFT CORNER
 double X_START = 70;
 double Y_START = 70;
 
-//Distances of tracking wheels from tracking center (INCHES)
+// Distances of tracking wheels from tracking center (INCHES)
 double LTrackRadius = 0;
 double RTrackRadius = 0; 
 double STrackRadius = 3.75;
@@ -36,16 +36,16 @@ double deltaDistS = 0;
 double totalDeltaDistL = 0;
 double totalDeltaDistR = 0;
 
-//The current angle of the bot (RADIANS)
+// The current angle of the bot (RADIANS)
 double currentAbsoluteOrientation = THETA_START;
-//The previous angle of the bot (RADIANS)
+// The previous angle of the bot (RADIANS)
 double previousTheta = THETA_START;
 
-//The change in Theta each loop (RADIANS)
+// The change in Theta each loop (RADIANS)
 double deltaTheta = 0;
 
-//The average angle throughout the arc (RADIANS)
-  //currentAbsoluteOrientation + (deltaTheta / 2)
+// The average angle throughout the arc (RADIANS)
+// currentAbsoluteOrientation + (deltaTheta / 2)
 double avgThetaForArc = currentAbsoluteOrientation + (deltaTheta / 2);
 
 double deltaXLocal = 0;
@@ -66,10 +66,10 @@ int positionTracking() {
 
   while(1) {
     LPos = -Left.position(rotationUnits::deg);
-    //RPos = -Right.position(rotationUnits::deg);
+    // RPos = -Right.position(rotationUnits::deg);
     SPos = Side.position(rotationUnits::deg);
-
-    //TRACKING
+ 
+    // TRACKING
     deltaDistL = ((LPos - LPrevPos) * M_PI / 180) * WHEEL_RADIUS;
     deltaDistR = ((RPos - RPrevPos) * M_PI / 180) * WHEEL_RADIUS;
     deltaDistS = ((SPos - SPrevPos) * M_PI / 180) * WHEEL_RADIUS;
@@ -81,7 +81,7 @@ int positionTracking() {
     totalDeltaDistL += deltaDistL;
     totalDeltaDistR += deltaDistR;
 
-    //currentAbsoluteOrientation = THETA_START - ( (totalDeltaDistL - totalDeltaDistR) / (LTrackRadius + RTrackRadius) );
+    // currentAbsoluteOrientation = THETA_START - ( (totalDeltaDistL - totalDeltaDistR) / (LTrackRadius + RTrackRadius) );
     currentAbsoluteOrientation = (360 - Inertial.heading(rotationUnits::deg)) * M_PI / 180.0;
 
     deltaTheta = currentAbsoluteOrientation - previousTheta;
@@ -93,19 +93,19 @@ int positionTracking() {
       deltaYLocal = deltaDistL;
     }
     else {
-      //Calculate the changes in the X and Y values (INCHES)
-      //Distance = 2 * Radius * sin(deltaTheta / 2)
+      // Calculate the changes in the X and Y values (INCHES)
+      // Distance = 2 * Radius * sin(deltaTheta / 2)
       deltaXLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistS / deltaTheta) + STrackRadius);
       deltaYLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistL / deltaTheta) - LTrackRadius);
     }
 
-    //The average angle during arc (RADIANS)
+    // The average angle during arc (RADIANS)
     avgThetaForArc = currentAbsoluteOrientation - (deltaTheta / 2);
 
     deltaXGlobal = (deltaYLocal * cos(avgThetaForArc)) - (deltaXLocal * sin(avgThetaForArc));
     deltaYGlobal = (deltaYLocal * sin(avgThetaForArc)) + (deltaXLocal * cos(avgThetaForArc));
 
-    //Angle wrapping
+    // Angle wrapping
     while(currentAbsoluteOrientation >= 2 * M_PI) {
       currentAbsoluteOrientation -= 2 * M_PI;
     }
@@ -132,8 +132,6 @@ int positionTracking() {
     // Brain.Screen.setCursor(7,8);
     // Brain.Screen.print(deltaTheta);
 
-
-    //loop every 20 milliseconds
     task::sleep(20);
   }
   return 1;
