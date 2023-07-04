@@ -8,17 +8,11 @@ extern motor FL;
 extern motor FR;
 extern motor BL;
 extern motor BR;
-extern inertial Inertial;
-extern encoder Side;
-extern motor Intake;
-extern digital_out Endgame;
-extern motor Catapult;
 extern motor MR;
 extern motor ML;
-extern digital_out PistonBoostL;
-extern digital_out PistonBoostR;
 extern encoder Left;
-extern limit Limit;
+extern encoder Side;
+extern inertial Inertial;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

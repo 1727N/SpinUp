@@ -1,3 +1,27 @@
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       LUX                                                       */
+/*    Created:      Thu Sep 26 2019                                           */
+/*    Description:  Competition Template                                      */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FL                   motor         1               
+// FR                   motor         10              
+// BL                   motor         11              
+// BR                   motor         20              
+// MR                   motor         19              
+// ML                   motor         12              
+// Left                 encoder       E, F            
+// Side                 encoder       G, H            
+// Inertial             inertial      18              
+// ---- END VEXCODE CONFIGURED DEVICES ----
+
 #include "chassis-control.h"
 #include "draw-field.h"
 #include <iostream>
@@ -46,9 +70,9 @@ void moveToPoint(double xPos, double yPos, int timeOutLength, double maxSpeed){
 }
 
 void rollFor(int timeRoll){
-  Intake.spin(reverse, 60, pct);
-  wait(timeRoll, msec);
-  Intake.stop();
+  //Intake.spin(reverse, 60, pct);
+  //wait(timeRoll, msec);
+  //Intake.stop();
 }
 
 int targetSpeed;
@@ -98,7 +122,7 @@ bool intakeTrue = false;
 bool outTakeTrue = false;
 const int intakePct = 100;
 
-void intakeControl(){
+/*void intakeControl(){
   Intake.setVelocity( intakePct, pct);
   Intake.setVelocity( intakePct, pct);
   if (Controller1.ButtonY.PRESSED){
@@ -132,51 +156,7 @@ void intakeControl(){
     Intake.setStopping(coast);
   }
 }
-
-// SHOOTING
-
-int catapultSpeed = 100;
-int catapultTimer = 50;
-
-bool hitLimit;
-
-void catapultControl(){
-  Catapult.setVelocity(100, pct);
-  if (Controller1.ButtonL1.PRESSED){
-    catapultTimer = 0;
-    hitLimit = false;
-    Catapult.setBrake(coast);
-    Catapult.spinFor(reverse, 250, msec);
-  }
-  if (Limit.pressing()){
-    hitLimit = true;
-    catapultTimer = 50;
-    Catapult.stop();
-  }
-  if (hitLimit){
-    Catapult.setBrake(brake);
-    Catapult.stop();
-  }
-  else if (!hitLimit && catapultTimer < 50){
-    catapultTimer++;
-    PistonBoostL.set(true);
-    PistonBoostR.set(true);
-  }
-  else if (!hitLimit && catapultTimer >= 50){
-    Catapult.setBrake(brake);
-    Catapult.spin(reverse);
-    PistonBoostL.set(false);
-    PistonBoostR.set(false);
-  }
-}
-
-// ENDGAME
-
-void endgameControl(){
-  if (Controller1.ButtonY.pressing() && Controller1.ButtonRight.pressing()){  
-    Endgame.set(true);
-  }
-}
+*/
     
 /*---------------------------------------------------------- USER CONTROL ----------------------------------------------------------*/
 
@@ -249,14 +229,8 @@ void arcadeDrive(){
 }
 
 void usercontrol(void) {
-  Endgame.set(false);
-
   Left.resetRotation();
   Side.resetRotation();
-
-  Endgame.set(false);
-  PistonBoostL.set(false);
-  PistonBoostR.set(false);
 
   FL.setBrake(brakeType::coast);
   FR.setBrake(brakeType::coast);
@@ -273,7 +247,9 @@ void usercontrol(void) {
     tankDrive();
     //arcadeDrive();
 
-    // tuneDrive();
+    //intakeControl();
+
+    //tuneDrive();
     //tuneTurns();
 
     // if (Controller1.ButtonLeft.PRESSED){
@@ -293,13 +269,8 @@ void usercontrol(void) {
     // }
     // if (Controller1.ButtonDown.PRESSED){
     //   driveForDist(-24, 3000, 1);
-      //turnToAngle(90, 3000);
+    //   turnToAngle(90, 3000);
     // }
-
-    intakeControl();
-    catapultControl();
-    endgameControl();
-
     wait(20, msec);
   }
 }

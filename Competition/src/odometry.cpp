@@ -5,7 +5,6 @@
 #define nonRollerStart M_PI_2
 #define AWPStart M_PI
 
-//CONSTANTS
 //Radius of tracking wheels in inches
 double WHEEL_RADIUS = 2.75;
 
@@ -22,7 +21,6 @@ double LTrackRadius = 0;
 double RTrackRadius = 0; 
 double STrackRadius = 3.75;
 
-//Angles (DEGREES)
 double LPos = 0;
 double RPos = 0;
 double SPos = 0;
@@ -31,12 +29,10 @@ double LPrevPos = 0;
 double RPrevPos = 0;
 double SPrevPos = 0;
 
-//Distances traveled by tracking wheels each loop (INCHES)
 double deltaDistL = 0;
 double deltaDistR = 0;
 double deltaDistS = 0;
 
-//Distance summations
 double totalDeltaDistL = 0;
 double totalDeltaDistR = 0;
 
@@ -48,19 +44,16 @@ double previousTheta = THETA_START;
 //The change in Theta each loop (RADIANS)
 double deltaTheta = 0;
 
-//The average angle Theta (RAD) throughout the arc
+//The average angle throughout the arc (RADIANS)
   //currentAbsoluteOrientation + (deltaTheta / 2)
 double avgThetaForArc = currentAbsoluteOrientation + (deltaTheta / 2);
 
-//The changes in the X and Y positions (INCHES)
 double deltaXLocal = 0;
 double deltaYLocal = 0;
 
-//Local change in x and y coords added to global (INCHES)
 double deltaXGlobal = 0;
 double deltaYGlobal = 0;
 
-//The global position (INCHES)
 double xPosGlobal = X_START;
 double yPosGlobal = Y_START;
 
@@ -88,7 +81,6 @@ int positionTracking() {
     totalDeltaDistL += deltaDistL;
     totalDeltaDistR += deltaDistR;
 
-    //Calculate the current absolute orientation (RADIANS)
     //currentAbsoluteOrientation = THETA_START - ( (totalDeltaDistL - totalDeltaDistR) / (LTrackRadius + RTrackRadius) );
     currentAbsoluteOrientation = (360 - Inertial.heading(rotationUnits::deg)) * M_PI / 180.0;
 
@@ -96,12 +88,10 @@ int positionTracking() {
 
     previousTheta = currentAbsoluteOrientation;
 
-    //If turn, else translate
     if(deltaTheta == 0) {
       deltaXLocal = deltaDistS;
       deltaYLocal = deltaDistL;
     }
-    //Else, calculate the new local position
     else {
       //Calculate the changes in the X and Y values (INCHES)
       //Distance = 2 * Radius * sin(deltaTheta / 2)
@@ -109,7 +99,7 @@ int positionTracking() {
       deltaYLocal = 2 * sin(deltaTheta / 2.0) * ((deltaDistL / deltaTheta) - LTrackRadius);
     }
 
-    //The average angle of the robot during its arc (RADIANS)
+    //The average angle during arc (RADIANS)
     avgThetaForArc = currentAbsoluteOrientation - (deltaTheta / 2);
 
     deltaXGlobal = (deltaYLocal * cos(avgThetaForArc)) - (deltaXLocal * sin(avgThetaForArc));

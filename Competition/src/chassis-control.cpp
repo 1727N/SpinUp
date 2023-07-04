@@ -150,7 +150,6 @@ double drivePowerPID = 0;
 bool isPositive;
 
 void drivePID() {
-  //Error is equal to the total distance away from the target (uses distance formula with current position and target location)
   if (!directDriveOn){
     driveError = sqrt(pow((xPosGlobal - xTargetLocation), 2) + pow((yPosGlobal - yTargetLocation), 2));
   }
@@ -160,7 +159,7 @@ void drivePID() {
     drivePowerFRBL = 1;
   }
   
-  // only integrate when we are within the tolerance zone (fabs = absolute value)
+  // only integrate when within tolerance
   if(fabs(driveError) < driveIntegralBound) {
     driveIntegral += driveError;
   }
@@ -168,7 +167,7 @@ void drivePID() {
     driveIntegral = 0;
   }
 
-  // prevent integral windup by reseting after we pass the setpoint
+  // reset after setpoint to stop integral windup
   if(driveError * drivePrevError < 0) {
     driveIntegral = 0;
   } 
@@ -179,7 +178,6 @@ void drivePID() {
 
   drivePowerPID = (driveError * drivekP + driveIntegral * drivekI + driveDerivative * drivekD);
 
-  //Limit power output to 12V 
   if(drivePowerPID > 12) {
     drivePowerPID = 12;
   }
@@ -239,7 +237,6 @@ void turnPID() {
 
   turnPowerPID = (turnError * turnkP + turnIntegral * turnkI + turnDerivative * turnkD);
 
-  //Limit power output to 12V
   if (!onlyTurn){
     if(turnPowerPID > 12) {
       turnPowerPID = 12;
@@ -305,11 +302,9 @@ int chassisControl() {
 
       //setDrivePower(robotRelativeAngle);
 
-      //get PID values for driving and turning
       drivePID();
       turnPID();
 
-      //set power
       FrontLeftPower = (turnPowerPID + (drivePowerFLBR * drivePowerPID)) * maxAllowedSpeed;
       FrontRightPower = ((drivePowerFRBL * drivePowerPID) - turnPowerPID) * maxAllowedSpeed;
       BackLeftPower = ((drivePowerFRBL * drivePowerPID) + turnPowerPID) * maxAllowedSpeed;
